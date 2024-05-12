@@ -11,6 +11,7 @@ from dash_bootstrap_templates import load_figure_template
 load_figure_template("QUARTZ")  # or QUARTZ
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.SLATE])  # or SLATE
+server = app.server
 
 df = pd.read_csv("https://plotly.github.io/datasets/country_indicators.csv")
 

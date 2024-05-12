@@ -9,3 +9,4 @@ qablet-extended
 dash
 dash_bootstrap_components
 dash_bootstrap_templates
+gunicorn
