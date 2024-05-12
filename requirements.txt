@@ -1,0 +1,11 @@
+--extra-index-url ${PKG_URL}
+pyarrow
+pandas
+numpy
+scipy
+matplotlib
+qablet_contracts
+qablet-extended
+dash
+dash_bootstrap_components
+dash_bootstrap_templates
