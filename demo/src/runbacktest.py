@@ -30,17 +30,10 @@ def base_dataset():
     }
 
 
-def backtest_acn(ticker="SPX"):
-    # load price data
-    filename = ROOTDIR + "\\data\\SP500.csv"
+def update_dataset(pricing_ts, dataset, spot, params):
+    """update assets data with equity forwards (need only one)."""
 
-    # get all month ends
-    data = pl.read_csv(
-        filename, try_parse_dates=True, infer_schema_length=None
-    ).set_sorted("date")
-
-    # Use current divs and risk free for historical pricings
-    dataset = base_dataset()
+    ticker = params["ticker"]
 
     # Rates and divs data
     times = np.array([0.0, 2.0])
@@ -49,52 +42,77 @@ def backtest_acn(ticker="SPX"):
     assets_data = {"USD": discount_data}
     divs = 0.02  # get_divs(basket)
 
+    fwds = spot * np.exp((rates - divs) * times)
+    assets_data[ticker] = ("FORWARDS", np.column_stack((times, fwds)))
+
+    # update dataset
+    dataset["PRICING_TS"] = int(pricing_ts.value / 1e6)  # ns to ms timestamp
+    dataset["ASSETS"] = assets_data
+    dataset["LV"] = {
+        "ASSET": ticker,
+        "VOL": 0.3,  # hardcoded vol (use vix perhaps?)
+    }
+    return spot
+
+
+def create_timetable(pricing_ts, monthend_dates, spot, trial, params):
+    """Create the timetable for the autocallable."""
+    ticker = params["ticker"]
+
+    m_per = 3
+    m_exp = 12
+    barrier_dts = monthend_dates[trial + m_per : trial + m_exp + 1 : m_per]
+
+    cpn_rate = 0.05
+    timetable = AutoCallable(
+        ccy="USD",
+        asset_name=ticker,
+        initial_spot=spot,
+        strike=80,  # percent
+        accrual_start=pricing_ts,
+        maturity=barrier_dts[-1],
+        barrier=100,
+        barrier_dates=barrier_dts,
+        cpn_rate=cpn_rate,
+    ).timetable()
+    return timetable
+
+
+def run_backtest(contract_params: dict):
+    # load price data
+    filename = ROOTDIR + "\\data\\SP500.csv"
+
+    # get all month ends
+    df = pl.read_csv(
+        filename, try_parse_dates=True, infer_schema_length=None
+    ).set_sorted("date")
+
+    # Use current divs and risk free for historical pricings
+    dataset = base_dataset()
+
     # Create the models
     model = LVMCModel()
-    # filename = "data/SP500.csv"
     bk_model = CFModelPyCSV(filename=filename, base="USD")
 
     results = []
     all_stats = []
     all_ts = []
     monthend_dates = pd.bdate_range(
-        datetime(2019, 5, 31), datetime(2024, 4, 30), freq="1BME"
+        datetime(2020, 3, 31), datetime(2024, 4, 30), freq="1BME"
     )
-    m_per = 3
     m_exp = 12
     num_trials = len(monthend_dates) - m_exp
     for i in range(num_trials):
         pricing_ts = monthend_dates[i]  # timestamp of trading date
-        barrier_dts = monthend_dates[i + m_per : i + m_exp + 1 : m_per]
 
-        # update assets data with equity forwards (need only one)
-        row_idx = data["date"].search_sorted(pricing_ts)
-        spot = data.item(row_idx, ticker)
-        fwds = spot * np.exp((rates - divs) * times)
-        assets_data[ticker] = ("FORWARDS", np.column_stack((times, fwds)))
+        row_idx = df["date"].search_sorted(pricing_ts)
+        spot = df.item(row_idx, contract_params["ticker"])
 
-        # update dataset
-        dataset["PRICING_TS"] = int(
-            pricing_ts.value / 1e6
-        )  # ns to ms timestamp
-        dataset["ASSETS"] = assets_data
-        dataset["LV"] = {
-            "ASSET": ticker,
-            "VOL": 0.3,  # hardcoded vol
-        }
+        update_dataset(pricing_ts, dataset, spot, contract_params)
 
-        cpn_rate = 0.05
-        timetable = AutoCallable(
-            ccy="USD",
-            asset_name=ticker,
-            initial_spot=spot,
-            strike=spot * 0.8,
-            accrual_start=pricing_ts,
-            maturity=barrier_dts[-1],
-            barrier=spot,
-            barrier_dates=barrier_dts,
-            cpn_rate=cpn_rate,
-        ).timetable()
+        timetable = create_timetable(
+            pricing_ts, monthend_dates, spot, i, contract_params
+        )
 
         # Compute prices of 0 and unit coupon
         px, _ = model.price(timetable, dataset)
@@ -104,17 +122,13 @@ def backtest_acn(ticker="SPX"):
         yrs_vec, cf_vec, ts_vec = get_cf(pricing_ts, timetable, stats)
         irr = compute_irr(cf_vec, yrs_vec, px)
 
-        # Calculate is_ko and duration
-        is_ko = False  # FIXFIX cf_vec_0[-1] == 0
-        # max_cf_idx = np.max(np.nonzero(cf_vec_0))
-        duration = 1.0  # yrs_vec[max_cf_idx]
-        results.append((pricing_ts, irr, is_ko, duration))
+        results.append((pricing_ts, irr))
         all_stats.append((ts_vec.astype("uint64").tolist(), cf_vec.tolist()))
         all_ts.append(pricing_ts.value)
 
     df = pd.DataFrame(
         results,
-        columns=["date", "irr", "isKO", "duration"],
+        columns=["date", "irr"],
     )
     # results.set_index("date", inplace=True)
     return df, {"stats": all_stats, "ts": all_ts}
@@ -123,7 +137,11 @@ def backtest_acn(ticker="SPX"):
 if __name__ == "__main__":
     sys.path.append(dirname(dirname(__file__)))
 
-    df, _ = backtest_acn()
+    contract_params = {
+        "ticker": "SPX",
+        "instrument": "AutoCallable",
+    }
+    df, _ = run_backtest(contract_params)
 
     import plotly.express as px
 
@@ -135,5 +153,4 @@ if __name__ == "__main__":
     fig.update_layout(
         margin={"l": 40, "b": 40, "t": 10, "r": 0}, hovermode="closest"
     )
-    # fig.show()
-    fig.write_html("first_figure.html", auto_open=True)
+    fig.write_html("scratch/first_figure.html", auto_open=True)

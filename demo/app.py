@@ -3,18 +3,21 @@ from os.path import dirname
 
 import dash
 import dash_bootstrap_components as dbc
-import pandas as pd
 from dash import Input, Output, callback, dcc, html
 
 sys.path.append(dirname(__file__))
 
+# Consider these options
+# Dark: slate, solar, cyborg, or darkly (with plots using plotly_dark)
+# Light: quartz, with plots using plotyl_white or seaborn
 app = dash.Dash(
-    __name__, use_pages=True, external_stylesheets=[dbc.themes.SLATE]
+    __name__, use_pages=True, external_stylesheets=[dbc.themes.SOLAR]
 )
 server = app.server
 
+# Other Notes on dbc items:
+# Use OffCanvas for extra information.
 
-df2 = pd.read_csv("https://plotly.github.io/datasets/country_indicators.csv")
 
 SIDEBAR_STYLE = {
     "position": "fixed",
@@ -23,7 +26,8 @@ SIDEBAR_STYLE = {
     "bottom": 0,
     "width": "24rem",
     "padding": "2rem 1rem",
-    "background-color": "#f8f9fa",
+    # "background-color": "#95B9C7",
+    # "background-color": "#95B9C7",
 }
 
 
@@ -49,19 +53,21 @@ sidebar = html.Div(
         html.Div(
             [
                 dcc.Dropdown(
-                    df2["Indicator Name"].unique(),
-                    "Fertility rate, total (births per woman)",
-                    id="crossfilter-xaxis-column",
+                    ["SPX", "AAPL", "GOOGL"],
+                    "SPX",
+                    id="contract-ticker",
                 ),
                 html.Br(),
                 dcc.Dropdown(
-                    df2["Indicator Name"].unique(),
-                    "Life expectancy at birth, total (years)",
-                    id="crossfilter-yaxis-column",
+                    ["AutoCallable", "Barrier", "Vanilla"],
+                    "AutoCallable",
+                    id="contract-type",
                 ),
                 dcc.Store(id="contract_inputs", storage_type="session"),
+                   
             ],
-            id="crossfilter-everything",
+            # className="dbc",
+            id="contract-params",
         ),
     ],
     style=SIDEBAR_STYLE,
@@ -78,12 +84,15 @@ app.layout = dbc.Container(
 
 @callback(
     Output("contract_inputs", "data"),
-    Input("crossfilter-xaxis-column", "value"),
-    Input("crossfilter-yaxis-column", "value"),
+    Input("contract-ticker", "value"),
+    Input("contract-type", "value"),
 )
-def update_graph(xaxis_column_name, yaxis_column_name):
-    data = (xaxis_column_name, yaxis_column_name)
-    return data
+def update_graph(ticker, contract_type):
+    contract_params = {
+        "ticker": ticker,
+        "contract-type": contract_type,
+    }
+    return contract_params
 
 
 if __name__ == "__main__":
