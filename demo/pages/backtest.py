@@ -3,7 +3,6 @@ import numpy as np
 import plotly.express as px
 from dash import Input, Output, callback, dcc, html
 from src.acn import backtest_acn
-import bisect
 
 
 dash.register_page(__name__, path="/")
@@ -14,7 +13,7 @@ layout = html.Div(
             [
                 dcc.Graph(
                     id="backtest-scatter",
-                    #hoverData={"points": [{"customdata": "Japan"}]},
+                    hoverData={"points": [{"customdata": 0}]},
                 )
             ],
             style={
@@ -46,28 +45,20 @@ layout = html.Div(
     Input("contract_inputs", "data"),
 )
 def update_graph(data):
-
     df, stats = backtest_acn()
 
     fig = px.scatter(
         x=df["date"],
         y=df["irr"],
         # hover_name=df["date"].strftime("%Y-%m-%d"),
-        labels={'x': 'Trade Date', 'y':'Rate of Return'}
+        labels={"x": "Trade Date", "y": "Rate of Return"},
     )
 
-    # TODO save range of index in customdata
-
-    # fig.update_traces(
-    #     customdata=df[df["Indicator Name"] == yaxis_column_name][
-    #         "Country Name"
-    #     ]
-    # )
+    fig.update_traces(customdata=np.arange(len(df)))
 
     fig.update_layout(
         margin={"l": 40, "b": 40, "t": 10, "r": 0}, hovermode="closest"
     )
-
 
     return fig, stats
 
@@ -106,20 +97,13 @@ def create_time_series(data, title):
 @callback(
     Output("backtest-one-trade", "figure"),
     Input("backtest-scatter", "hoverData"),
-    Input("contract_inputs", "data"),
     Input("backtest_stats", "data"),
 )
-def update_backtest_cashflow(hoverData, data, stats):
-    xaxis_column_name, _ = data
+def update_backtest_cashflow(hoverData, stats):
+    idx = hoverData["points"][0]["customdata"]
 
-    if hoverData is None:
-        prc_ts = stats['ts'][0]
-        cf = stats['stats'][0]
-    else:
-        prc_ts = hoverData["points"][0]["date"]
-        idx = bisect.bisect_left(stats['ts'], prc_ts)
-        cf = stats['stats'][idx]
+    prc_ts = stats["ts"][idx]
+    cf = stats["stats"][idx]
 
     title = "<b>{}</b><br>{}".format(prc_ts, prc_ts)
     return create_time_series(cf, title)
-
