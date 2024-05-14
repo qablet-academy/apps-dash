@@ -17,7 +17,7 @@ if __name__ == "__main__":
     }
     df, _ = run_backtest(contract_params)
 
-    # fig = plot_irr(df["date"], df["irr"])
-    fig = plot_irr_histogram(df["irr"])
+    fig = plot_irr(df["date"], df["irr"])
+    # fig = plot_irr_histogram(df["irr"])
 
     fig.write_html("scratch/first_figure.html", auto_open=True)

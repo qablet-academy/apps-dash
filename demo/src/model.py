@@ -22,6 +22,7 @@ class CFModelPyCSV(CFModelPyBase):
         self.data = pl.read_csv(
             filename, try_parse_dates=True, infer_schema_length=None
         ).set_sorted("date")
+        self.ts = self.data["date"].cast(int)
 
         super().__init__(base)
 
@@ -30,7 +31,7 @@ class CFModelPyCSV(CFModelPyBase):
         search_sorted is faster than filter by date. It picks the date on or before the ts.
         it appears that polars stores dates as a day timestamp, so a conversion is
         needed from qablet's milliseconds timestamp."""
-        row = self.data["date"].search_sorted(ts // MS_IN_DAY)
+        row = self.ts.search_sorted(ts // MS_IN_DAY)
         val = self.data.item(row, unit)
         return val
 
