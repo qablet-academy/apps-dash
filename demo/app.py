@@ -1,16 +1,20 @@
+import sys
+from os.path import dirname
+
 import dash
-from dash import html, callback, Input, Output, dcc
 import dash_bootstrap_components as dbc
 import pandas as pd
+from dash import Input, Output, callback, dcc, html
 
+sys.path.append(dirname(__file__))
 
 app = dash.Dash(
-    __name__, use_pages=True, external_stylesheets=[dbc.themes.MORPH]
+    __name__, use_pages=True, external_stylesheets=[dbc.themes.SLATE]
 )
 server = app.server
 
 
-df = pd.read_csv("https://plotly.github.io/datasets/country_indicators.csv")
+df2 = pd.read_csv("https://plotly.github.io/datasets/country_indicators.csv")
 
 SIDEBAR_STYLE = {
     "position": "fixed",
@@ -45,13 +49,13 @@ sidebar = html.Div(
         html.Div(
             [
                 dcc.Dropdown(
-                    df["Indicator Name"].unique(),
+                    df2["Indicator Name"].unique(),
                     "Fertility rate, total (births per woman)",
                     id="crossfilter-xaxis-column",
                 ),
                 html.Br(),
                 dcc.Dropdown(
-                    df["Indicator Name"].unique(),
+                    df2["Indicator Name"].unique(),
                     "Life expectancy at birth, total (years)",
                     id="crossfilter-yaxis-column",
                 ),
