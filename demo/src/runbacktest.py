@@ -1,14 +1,11 @@
 import os
-import sys
 from datetime import datetime
-from os.path import dirname
 
 import numpy as np
 import pandas as pd
 import polars as pl
 from qablet.black_scholes.mc import LVMCModel
 
-# sys.path.append(dirname(dirname(__file__)))
 from src.model import CFModelPyCSV, get_cf
 from src.timetables import create_timetable
 from src.utils import compute_irr
@@ -108,25 +105,3 @@ def run_backtest(contract_params: dict):
     )
     # results.set_index("date", inplace=True)
     return df, {"stats": all_stats, "ts": all_ts}
-
-
-if __name__ == "__main__":
-    sys.path.append(dirname(dirname(__file__)))
-
-    contract_params = {
-        "ticker": "SPX",
-        "instrument": "AutoCallable",
-    }
-    df, _ = run_backtest(contract_params)
-
-    import plotly.express as px
-
-    fig = px.scatter(
-        x=df["date"],
-        y=df["irr"],
-        # hover_name=df["date"],
-    )
-    fig.update_layout(
-        margin={"l": 40, "b": 40, "t": 10, "r": 0}, hovermode="closest"
-    )
-    fig.write_html("scratch/first_figure.html", auto_open=True)
