@@ -7,12 +7,11 @@ import numpy as np
 import pandas as pd
 import polars as pl
 from qablet.black_scholes.mc import LVMCModel
-from qablet_contracts.eq.autocall import AutoCallable
 
-sys.path.append(dirname(dirname(__file__)))
+# sys.path.append(dirname(dirname(__file__)))
 from src.model import CFModelPyCSV, get_cf
+from src.timetables import create_timetable
 from src.utils import compute_irr
-
 
 ROOTDIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
@@ -55,32 +54,9 @@ def update_dataset(pricing_ts, dataset, spot, params):
     return spot
 
 
-def create_timetable(pricing_ts, monthend_dates, spot, trial, params):
-    """Create the timetable for the autocallable."""
-    ticker = params["ticker"]
-
-    m_per = 3
-    m_exp = 12
-    barrier_dts = monthend_dates[trial + m_per : trial + m_exp + 1 : m_per]
-
-    cpn_rate = 0.05
-    timetable = AutoCallable(
-        ccy="USD",
-        asset_name=ticker,
-        initial_spot=spot,
-        strike=80,  # percent
-        accrual_start=pricing_ts,
-        maturity=barrier_dts[-1],
-        barrier=100,
-        barrier_dates=barrier_dts,
-        cpn_rate=cpn_rate,
-    ).timetable()
-    return timetable
-
-
 def run_backtest(contract_params: dict):
     # load price data
-    filename = ROOTDIR + "\\data\\SP500.csv"
+    filename = ROOTDIR + "/data/SP500.csv"
 
     # get all month ends
     df = pl.read_csv(

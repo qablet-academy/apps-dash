@@ -4,6 +4,7 @@ from os.path import dirname
 import dash
 import dash_bootstrap_components as dbc
 from dash import Input, Output, callback, dcc, html
+from src.timetables import CONTRACT_TYPES
 
 sys.path.append(dirname(__file__))
 
@@ -26,49 +27,48 @@ SIDEBAR_STYLE = {
     "bottom": 0,
     "width": "24rem",
     "padding": "2rem 1rem",
-    # "background-color": "#95B9C7",
-    # "background-color": "#95B9C7",
 }
 
+contract_editor = html.Div(
+    [
+        dcc.Dropdown(
+            ["SPX", "AAPL", "GOOGL"],
+            "SPX",
+            id="ctr-ticker",
+        ),
+        html.Br(),
+        dcc.Dropdown(
+            CONTRACT_TYPES,
+            CONTRACT_TYPES[0],
+            id="ctr-type",
+        ),
+        dcc.Store(id="ctr-params", storage_type="session"),
+    ],
+    id="contractr-params",
+)
+
+report_nav = dbc.Nav(
+    [
+        dbc.NavLink(
+            html.Div(page["name"], className="ms-2"),
+            href=page["path"],
+            active="exact",
+        )
+        for page in dash.page_registry.values()
+    ],
+    vertical=True,
+    pills=True,
+)
 
 sidebar = html.Div(
     [
         html.P("Choose a report type below", className="lead"),
-        dbc.Nav(
-            [
-                dbc.NavLink(
-                    html.Div(page["name"], className="ms-2"),
-                    href=page["path"],
-                    active="exact",
-                )
-                for page in dash.page_registry.values()
-            ],
-            vertical=True,
-            pills=True,
-        ),
+        report_nav,
         html.Br(),
         html.H2("Contract"),
         html.Hr(),
-        html.P("Choose properties for contract below.", className="lead"),
-        html.Div(
-            [
-                dcc.Dropdown(
-                    ["SPX", "AAPL", "GOOGL"],
-                    "SPX",
-                    id="contract-ticker",
-                ),
-                html.Br(),
-                dcc.Dropdown(
-                    ["AutoCallable", "Barrier", "Vanilla"],
-                    "AutoCallable",
-                    id="contract-type",
-                ),
-                dcc.Store(id="contract_inputs", storage_type="session"),
-                   
-            ],
-            # className="dbc",
-            id="contract-params",
-        ),
+        html.P("Select contract below.", className="lead"),
+        contract_editor,
     ],
     style=SIDEBAR_STYLE,
 )
@@ -83,14 +83,14 @@ app.layout = dbc.Container(
 
 
 @callback(
-    Output("contract_inputs", "data"),
-    Input("contract-ticker", "value"),
-    Input("contract-type", "value"),
+    Output("ctr-params", "data"),
+    Input("ctr-ticker", "value"),
+    Input("ctr-type", "value"),
 )
 def update_graph(ticker, contract_type):
     contract_params = {
         "ticker": ticker,
-        "contract-type": contract_type,
+        "ctr-type": contract_type,
     }
     return contract_params
 

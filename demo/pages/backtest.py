@@ -1,15 +1,16 @@
 """
 This page demonstrates backtesting a given contract type, and certain choice of parameters.
 """
+from datetime import datetime
+
 import dash
 import numpy as np
 import pandas as pd
 import plotly.express as px
-from dash import Input, Output, callback, dcc, html
-from src.runbacktest import run_backtest
-from src.model import MS_IN_DAY
-from datetime import datetime
 import pytz
+from dash import Input, Output, callback, dcc, html
+from src.model import MS_IN_DAY
+from src.runbacktest import run_backtest
 
 dash.register_page(__name__, path="/")
 
@@ -23,7 +24,10 @@ layout = html.Div(
                     id="backtest-all",
                     hoverData={"points": [{"customdata": 0}]},
                 ),
-                html.P("Cashflow of selected Trade"),
+                html.Br(),
+                html.P(
+                    "Cashflow of selected Trade. Hover on plot above to select trade."
+                ),
                 dcc.Graph(id="backtest-one"),
             ],
             style={"display": "inline-block", "width": "69%"},
@@ -38,7 +42,7 @@ layout = html.Div(
                 "padding": "0 20",
             },
         ),
-        dcc.Store(id="backtest_stats", storage_type="session"),
+        dcc.Store(id="backtest-stats", storage_type="session"),
     ],
     style={
         "position": "fixed",
@@ -51,8 +55,8 @@ layout = html.Div(
 
 @callback(
     Output("backtest-all", "figure"),
-    Output("backtest_stats", "data"),
-    Input("contract_inputs", "data"),
+    Output("backtest-stats", "data"),
+    Input("ctr-params", "data"),
 )
 def update_irr_graph(contract_params):
     """Run the backtest and plot the rate of return for each trade date.
@@ -82,7 +86,7 @@ def update_irr_graph(contract_params):
 @callback(
     Output("backtest-one", "figure"),
     Input("backtest-all", "hoverData"),
-    Input("backtest_stats", "data"),
+    Input("backtest-stats", "data"),
 )
 def update_backtest_cashflow(hoverData, stats):
     """Plot the cashflow of the selected trade date."""
@@ -96,6 +100,7 @@ def update_backtest_cashflow(hoverData, stats):
 
     # TODO: use red/green color for cashflows
     # TODO: consider rounded.
+    # TODO: Net cashflows on same date. either here or in get_cf.
     fig = px.bar(
         x=x,
         y=y,
