@@ -12,9 +12,14 @@ def loss_irr(
     return 0.5 * err * err
 
 
-def compute_irr(
-    payments: np.ndarray, times: np.ndarray, price: float
+def compute_return(
+    payments: np.ndarray,
+    times: np.ndarray,
+    price: float,
+    annualized: bool = True,
 ) -> float:
+    if not annualized:
+        return payments.sum() / price - 1
     try:
         res = minimize_scalar(fun=loss_irr, args=(payments, times, price))
         if res.success:

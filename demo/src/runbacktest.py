@@ -8,7 +8,7 @@ from qablet.black_scholes.mc import LVMCModel
 
 from src.model import CFModelPyCSV, get_cf
 from src.timetables import create_timetable
-from src.utils import compute_irr
+from src.utils import compute_return
 
 ROOTDIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
@@ -51,7 +51,7 @@ def update_dataset(pricing_ts, dataset, spot, params):
     return spot
 
 
-def run_backtest(contract_params: dict):
+def run_backtest(contract_params: dict, annualized: bool = True):
     # load price data
     filename = ROOTDIR + "/data/SP500.csv"
 
@@ -93,10 +93,12 @@ def run_backtest(contract_params: dict):
         # Compute backtest stats and irr
         stats = bk_model.cashflow(timetable)
         yrs_vec, cf_vec, ts_vec = get_cf(pricing_ts, timetable, stats)
-        irr = compute_irr(cf_vec, yrs_vec, px)
+        irr = compute_return(cf_vec, yrs_vec, px, annualized=annualized)
 
         results.append((pricing_ts, irr))
-        all_stats.append((ts_vec.astype("uint64").tolist(), cf_vec.tolist()))
+        all_stats.append(
+            (ts_vec.astype("uint64").tolist(), cf_vec.tolist(), px)
+        )
         all_ts.append(pricing_ts.value)
 
     df = pd.DataFrame(

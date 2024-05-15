@@ -7,9 +7,14 @@ import pytz
 from src.model import MS_IN_DAY
 
 
-def plot_cashflow(x, y, prc_ts):
-    # TODO: use red/green color for cashflows
-    # TODO: consider rounded.
+def plot_cashflow(prc_ts, cf):
+    x = np.insert(cf[0], 0, prc_ts // 1000000)
+    x = np.array(x).astype("datetime64[ms]")
+    y = np.array(cf[1])
+    y = np.insert(y, 0, -cf[2])
+
+    color = np.where(y < 0, "coral", "aquamarine")
+
     # TODO: Net cashflows on same date. either here or in get_cf.
     fig = px.bar(
         x=x,
@@ -18,14 +23,14 @@ def plot_cashflow(x, y, prc_ts):
         template="plotly_dark",
     )
     fig.update_layout(height=225, margin={"l": 20, "b": 30, "r": 10, "t": 10})
-    fig.update_traces(width=MS_IN_DAY * 2)
+    fig.update_traces(width=MS_IN_DAY * 2, marker_color=color)
 
     # Annotate the trade and the last cashflow date
     datefmt = "%Y-%m-%d"
     prc_dt = datetime.fromtimestamp(prc_ts // 1000000000, pytz.utc)
     fig.add_annotation(
         x=prc_dt,
-        text=f"Trade Date<br><b>{prc_dt.strftime(datefmt)}</b>",
+        text=f"Paid on Trade Date<br><b>{prc_dt.strftime(datefmt)}</b>",
     )
     end_dt = pd.to_datetime(x[-1])
     fig.add_annotation(
@@ -35,16 +40,28 @@ def plot_cashflow(x, y, prc_ts):
     return fig
 
 
-def plot_irr(x, y):
+def plot_irr(x, y, annualized=True):
+    if annualized:
+        ylabel = "Annualized Rate of Return"
+    else:
+        ylabel = "Gain/Loss"
+
+    color = np.where(y < 0, "coral", "aquamarine")
+
     fig = px.scatter(
         x=x,
         y=y,
-        labels={"x": "Trade Date", "y": "Rate of Return"},
+        labels={"x": "Trade Date", "y": ylabel},
         template="plotly_dark",
+    )
+    fig.add_hline(
+        y=0.0,
     )
 
     fig.update_traces(
-        customdata=np.arange(len(x)), marker=dict(size=12, opacity=0.7)
+        customdata=np.arange(len(x)),
+        marker=dict(size=12, opacity=0.7),
+        marker_color=color,
     )
 
     fig.update_layout(
@@ -61,6 +78,7 @@ def plot_irr_histogram(df):
         y=df,
         nbins=20,
         template="plotly_dark",
+        color_discrete_sequence=["aquamarine"],
     )
 
     fig.update_layout(
