@@ -12,7 +12,6 @@ if __name__ == "__main__":
 
     from plots.backtest_plots import (
         plot_irr,
-        plot_irr_histogram,
         plot_cashflow,
     )
     from runbacktest import run_backtest
@@ -25,8 +24,6 @@ if __name__ == "__main__":
 
     if plot_type == "IRR":
         fig = plot_irr(df["date"], df["irr"])
-    elif plot_type == "IRR_HIST":
-        fig = plot_irr_histogram(df["irr"])
     else:
         idx = 3  # Select a trade
         fig = plot_cashflow(stats["ts"][idx], stats["stats"][idx])

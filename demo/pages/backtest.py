@@ -3,7 +3,6 @@ This page demonstrates backtesting a given contract type, and certain choice of 
 """
 
 import dash
-import numpy as np
 
 from dash import Input, Output, callback, dcc, html
 
@@ -11,7 +10,6 @@ from src.runbacktest import run_backtest
 from src.plots.backtest_plots import (
     plot_cashflow,
     plot_irr,
-    plot_irr_histogram,
 )
 
 dash.register_page(__name__, path="/")
@@ -20,7 +18,7 @@ layout = html.Div(
     [
         html.Div(
             [
-                # Two long timeseries plots on the left
+                # IRR graph on the top, and cashflow graph below.
                 html.P("Returns for each Trade Date"),
                 dcc.Graph(
                     id="backtest-all",
@@ -32,28 +30,14 @@ layout = html.Div(
                 ),
                 dcc.Graph(id="backtest-one"),
             ],
-            style={"display": "inline-block", "width": "69%"},
-        ),
-        html.Div(
-            [
-                # Two small figures on the right : histogram and trade details
-                html.P("Returns Histogram"),
-                dcc.Graph(id="backtest-hist"),
-                html.Br(),
-                html.P("Trade Details"),
-                # dcc.Graph(id="backtest-one"),
-            ],
-            style={
-                "width": "29%",
-                "display": "inline-block",
-            },
+            style={"display": "inline-block", "width": "95%"},
         ),
         dcc.Store(id="backtest-stats", storage_type="session"),
     ],
     style={
         "position": "fixed",
         "top": 10,
-        "left": "25%",
+        "left": "25%",  # Sidebar takes the left 25% of the screen.
         "width": "75%",
     },
 )
@@ -61,7 +45,6 @@ layout = html.Div(
 
 @callback(
     Output("backtest-all", "figure"),
-    Output("backtest-hist", "figure"),
     Output("backtest-stats", "data"),
     Input("ctr-params", "data"),
 )
@@ -76,9 +59,8 @@ def update_irr_graph(contract_params):
     )
 
     fig1 = plot_irr(df["date"], df["irr"], annualized=annualized)
-    fig2 = plot_irr_histogram(df["irr"])
 
-    return fig1, fig2, stats
+    return fig1, stats
 
 
 @callback(
