@@ -6,7 +6,7 @@ import dash
 
 from dash import Input, Output, callback, dcc, html
 
-from src.runbacktest import run_backtest
+from src.backtest import run_backtest
 from src.plots.backtest_plots import (
     plot_cashflow,
     plot_irr,
@@ -21,18 +21,18 @@ layout = html.Div(
                 # IRR graph on the top, and cashflow graph below.
                 html.P("Returns for each Trade Date"),
                 dcc.Graph(
-                    id="backtest-all",
+                    id="past-irr",
                     hoverData={"points": [{"customdata": 0}]},
                 ),
                 html.Br(),
                 html.P(
                     "Cashflow of selected Trade. Hover on plot above to select trade."
                 ),
-                dcc.Graph(id="backtest-one"),
+                dcc.Graph(id="past-cf"),
             ],
             style={"display": "inline-block", "width": "95%"},
         ),
-        dcc.Store(id="backtest-stats", storage_type="session"),
+        dcc.Store(id="past-data", storage_type="session"),
     ],
     style={
         "position": "fixed",
@@ -44,8 +44,8 @@ layout = html.Div(
 
 
 @callback(
-    Output("backtest-all", "figure"),
-    Output("backtest-stats", "data"),
+    Output("past-irr", "figure"),
+    Output("past-data", "data"),
     Input("ctr-params", "data"),
 )
 def update_irr_graph(contract_params):
@@ -64,9 +64,9 @@ def update_irr_graph(contract_params):
 
 
 @callback(
-    Output("backtest-one", "figure"),
-    Input("backtest-all", "hoverData"),
-    Input("backtest-stats", "data"),
+    Output("past-cf", "figure"),
+    Input("past-irr", "hoverData"),
+    Input("past-data", "data"),
 )
 def update_backtest_cashflow(hoverData, stats):
     """Plot the cashflow of the selected trade date."""

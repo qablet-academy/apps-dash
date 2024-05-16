@@ -6,7 +6,7 @@ from qablet_contracts.eq.barrier import OptionKO
 from qablet_contracts.eq.cliquet import Accumulator
 from qablet_contracts.eq.vanilla import Option
 
-CONTRACT_TYPES = ["AutoCallable", "KnockOut", "Vanilla", "Cliquet"]
+CONTRACT_TYPES = ["AutoCallable", "KnockOut", "VanillaOption", "Cliquet"]
 
 
 def create_timetable(pricing_ts, monthend_dates, spot, trial, params):
@@ -22,7 +22,7 @@ def create_timetable(pricing_ts, monthend_dates, spot, trial, params):
         return create_barrier_timetable(
             pricing_ts, monthend_dates, spot, trial, params
         )
-    elif contract_type == "Vanilla":
+    elif contract_type == "VanillaOption":
         return create_vanilla_timetable(
             pricing_ts, monthend_dates, spot, trial, params
         )

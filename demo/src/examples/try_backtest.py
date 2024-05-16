@@ -1,24 +1,24 @@
 """
-Script to the test the backtest page without launching the app.
+Script to test the backtest page without launching the app.
 """
 import sys
 from os.path import dirname
 
 
 if __name__ == "__main__":
-    sys.path.append(dirname(dirname(__file__)))
+    sys.path.append(dirname(dirname(dirname(__file__))))
 
     plot_type = "IRR"  # IRR or Cashflow
 
-    from plots.backtest_plots import (
+    from src.plots.backtest_plots import (
         plot_irr,
         plot_cashflow,
     )
-    from runbacktest import run_backtest
+    from src.backtest import run_backtest
 
     contract_params = {
         "ticker": "SPX",
-        "ctr-type": "Vanilla",
+        "ctr-type": "VanillaOption",
     }
     df, stats = run_backtest(contract_params, annualized=False)
 

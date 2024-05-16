@@ -5,6 +5,7 @@ import dash
 import dash_bootstrap_components as dbc
 from dash import Input, Output, callback, dcc, html, State
 from src.timetables import CONTRACT_TYPES
+from src.about import tt_description
 
 sys.path.append(dirname(__file__))
 
@@ -53,9 +54,14 @@ contract_editor = html.Div(
         ),
         dcc.Store(id="ctr-params", storage_type="session"),
         html.Br(),
-        dbc.Button("About this Contract", id="open-offcanvas", n_clicks=0),
+        dbc.Button(
+            "About this Contract",
+            id="open-offcanvas",
+            n_clicks=0,
+            style={"backgroundColor": "#C08261"},
+        ),
         dbc.Offcanvas(
-            html.P("Description about this instrument (TBD)."),
+            dcc.Markdown(id="offcanvas-body"),
             id="offcanvas",
             title="About this Contract",
             is_open=False,
@@ -103,15 +109,22 @@ def update_graph(ticker, contract_type):
 
 
 # Toggle the offcanvas to show the contract description.
-@app.callback(
+@callback(
     Output("offcanvas", "is_open"),
-    Input("open-offcanvas", "n_clicks"),
-    [State("offcanvas", "is_open")],
+    Output("offcanvas-body", "children"),
+    [Input("open-offcanvas", "n_clicks")],
+    [State("offcanvas", "is_open"), State("ctr-params", "data")],
 )
-def toggle_offcanvas(n1, is_open):
+def toggle_offcanvas(n1, is_open, contract_params):
     if n1:
-        return not is_open
-    return is_open
+        is_open = not is_open
+
+    if is_open:
+        text = tt_description(contract_params)
+    else:
+        text = ""
+
+    return is_open, text
 
 
 if __name__ == "__main__":
