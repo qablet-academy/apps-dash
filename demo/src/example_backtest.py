@@ -1,5 +1,5 @@
 """
-Test the backtest plot without the app.
+Script to the test the backtest page without launching the app.
 """
 import sys
 from os.path import dirname
@@ -8,7 +8,7 @@ from os.path import dirname
 if __name__ == "__main__":
     sys.path.append(dirname(dirname(__file__)))
 
-    plot_type = "IRR"
+    plot_type = "IRR"  # IRR or Cashflow
 
     from plots.backtest_plots import (
         plot_irr,

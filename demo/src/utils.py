@@ -1,3 +1,6 @@
+"""
+This module contains utility functions for the demo.
+"""
 import numpy as np
 from scipy.optimize import minimize_scalar
 

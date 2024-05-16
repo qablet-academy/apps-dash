@@ -1,5 +1,5 @@
 """
-Create timetables for different contracts.
+Create timetables for different contracts, using the contract parameters dict.
 """
 from qablet_contracts.eq.autocall import AutoCallable
 from qablet_contracts.eq.barrier import OptionKO

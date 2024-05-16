@@ -23,6 +23,21 @@ SIDEBAR_STYLE = {
     "padding": "2rem 1rem",
 }
 
+# Nav to select the page
+report_nav = dbc.Nav(
+    [
+        dbc.NavLink(
+            html.Div(page["name"], className="ms-2"),
+            href=page["path"],
+            active="exact",
+        )
+        for page in dash.page_registry.values()
+    ],
+    vertical=True,
+    pills=True,
+)
+
+# Contract editor
 contract_editor = html.Div(
     [
         dcc.Dropdown(
@@ -49,19 +64,7 @@ contract_editor = html.Div(
     id="contractr-params",
 )
 
-report_nav = dbc.Nav(
-    [
-        dbc.NavLink(
-            html.Div(page["name"], className="ms-2"),
-            href=page["path"],
-            active="exact",
-        )
-        for page in dash.page_registry.values()
-    ],
-    vertical=True,
-    pills=True,
-)
-
+# Sidebar has the Pages Nav (Top), and Contract Editor (Below).
 sidebar = html.Div(
     [
         html.Img(src="assets/logo.png", width="25%"),
@@ -75,7 +78,8 @@ sidebar = html.Div(
     style=SIDEBAR_STYLE,
 )
 
-
+# The app has sidebar on left, the pages are on the right.
+# The pages area is populated by one of the scripts in the /pages folder.
 app.layout = dbc.Container(
     [
         sidebar,
@@ -84,6 +88,7 @@ app.layout = dbc.Container(
 )
 
 
+# Collect parameters from the contract editor and store them in a dict.
 @callback(
     Output("ctr-params", "data"),
     Input("ctr-ticker", "value"),
@@ -97,6 +102,7 @@ def update_graph(ticker, contract_type):
     return contract_params
 
 
+# Toggle the offcanvas to show the contract description.
 @app.callback(
     Output("offcanvas", "is_open"),
     Input("open-offcanvas", "n_clicks"),

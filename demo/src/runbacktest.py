@@ -1,3 +1,8 @@
+"""
+Run backtest for a given contract. The backtest is run on a historical dataset.
+Return the a dataframe with IRR for each trade date,
+and a dict with the cashflow for each trade date.
+"""
 import os
 from datetime import datetime
 

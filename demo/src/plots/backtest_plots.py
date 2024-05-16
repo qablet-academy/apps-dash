@@ -1,3 +1,6 @@
+"""
+Methods to crete figures for the backtest page.
+"""
 from datetime import datetime
 
 import numpy as np

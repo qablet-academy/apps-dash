@@ -1,5 +1,5 @@
 """
-This page demonstrates backtesting a given contract type, and certain choice of parameters.
+This page demonstrates backtesting a given contract type, and show IRR and cashflow.
 """
 
 import dash
