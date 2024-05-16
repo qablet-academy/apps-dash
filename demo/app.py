@@ -3,21 +3,15 @@ from os.path import dirname
 
 import dash
 import dash_bootstrap_components as dbc
-from dash import Input, Output, callback, dcc, html
+from dash import Input, Output, callback, dcc, html, State
 from src.timetables import CONTRACT_TYPES
 
 sys.path.append(dirname(__file__))
 
-# Consider these options
-# Dark: slate, solar, cyborg, or darkly (with plots using plotly_dark)
-# Light: quartz, with plots using plotyl_white or seaborn
 app = dash.Dash(
     __name__, use_pages=True, external_stylesheets=[dbc.themes.SOLAR]
 )
 server = app.server
-
-# Other Notes on dbc items:
-# Use OffCanvas for extra information.
 
 
 SIDEBAR_STYLE = {
@@ -43,6 +37,14 @@ contract_editor = html.Div(
             id="ctr-type",
         ),
         dcc.Store(id="ctr-params", storage_type="session"),
+        html.Br(),
+        dbc.Button("About this Contract", id="open-offcanvas", n_clicks=0),
+        dbc.Offcanvas(
+            html.P("Description about this instrument (TBD)."),
+            id="offcanvas",
+            title="About this Contract",
+            is_open=False,
+        ),
     ],
     id="contractr-params",
 )
@@ -62,12 +64,12 @@ report_nav = dbc.Nav(
 
 sidebar = html.Div(
     [
-        html.P("Choose a report type below", className="lead"),
+        html.Img(src="assets/logo.png", width="25%"),
+        html.P("What would you explore?", className="lead"),
         report_nav,
         html.Br(),
         html.H2("Contract"),
         html.Hr(),
-        html.P("Select contract below.", className="lead"),
         contract_editor,
     ],
     style=SIDEBAR_STYLE,
@@ -93,6 +95,17 @@ def update_graph(ticker, contract_type):
         "ctr-type": contract_type,
     }
     return contract_params
+
+
+@app.callback(
+    Output("offcanvas", "is_open"),
+    Input("open-offcanvas", "n_clicks"),
+    [State("offcanvas", "is_open")],
+)
+def toggle_offcanvas(n1, is_open):
+    if n1:
+        return not is_open
+    return is_open
 
 
 if __name__ == "__main__":
