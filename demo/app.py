@@ -60,12 +60,6 @@ contract_editor = html.Div(
             n_clicks=0,
             style={"backgroundColor": "#C08261"},
         ),
-        dbc.Offcanvas(
-            dcc.Markdown(id="offcanvas-body"),
-            id="offcanvas",
-            title="About this Contract",
-            is_open=False,
-        ),
     ],
     id="contractr-params",
 )
@@ -73,7 +67,7 @@ contract_editor = html.Div(
 # Sidebar has the Pages Nav (Top), and Contract Editor (Below).
 sidebar = html.Div(
     [
-        html.Img(src="assets/logo.png", width="25%"),
+        html.Img(src="assets/logo.png", width="100%"),
         html.P("What would you explore?", className="lead"),
         report_nav,
         html.Br(),
@@ -90,6 +84,13 @@ app.layout = dbc.Container(
     [
         sidebar,
         dash.page_container,
+        dbc.Offcanvas(
+            dcc.Markdown(id="offcanvas-body"),
+            id="offcanvas",
+            title="About this Contract",
+            is_open=False,
+            placement="end",
+        ),
     ],
 )
 

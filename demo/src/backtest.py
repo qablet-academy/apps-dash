@@ -90,7 +90,7 @@ def run_backtest(contract_params: dict, annualized: bool = True):
 
         timetable = create_timetable(
             pricing_ts, monthend_dates, spot, i, contract_params
-        )
+        ).timetable()
 
         # Compute prices of 0 and unit coupon
         px, _ = model.price(timetable, dataset)

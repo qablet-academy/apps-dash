@@ -55,7 +55,7 @@ def create_autocallable_timetable(
         barrier=100,
         barrier_dates=barrier_dts,
         cpn_rate=cpn_rate,
-    ).timetable()
+    )
 
 
 def create_barrier_timetable(pricing_ts, monthend_dates, spot, trial, params):
@@ -76,7 +76,7 @@ def create_barrier_timetable(pricing_ts, monthend_dates, spot, trial, params):
         barrier_type="Up/Out",
         barrier_dates=barrier_dts,
         rebate=spot * 0.01,
-    ).timetable()
+    )
 
 
 def create_vanilla_timetable(pricing_ts, monthend_dates, spot, trial, params):
@@ -93,7 +93,7 @@ def create_vanilla_timetable(pricing_ts, monthend_dates, spot, trial, params):
         strike=spot,
         maturity=barrier_dts[-1],  # simplify later
         is_call=True,
-    ).timetable()
+    )
 
 
 def create_cliquet_timetable(pricing_ts, monthend_dates, spot, trial, params):
@@ -111,4 +111,4 @@ def create_cliquet_timetable(pricing_ts, monthend_dates, spot, trial, params):
         global_floor=0.0,
         local_cap=0.05,
         local_floor=-0.05,
-    ).timetable()
+    )
