@@ -3,9 +3,9 @@ from os.path import dirname
 
 import dash
 import dash_bootstrap_components as dbc
-from dash import Input, Output, callback, dcc, html, State
-from src.timetables import CONTRACT_TYPES
+from dash import Input, Output, State, callback, dcc, html
 from src.about import tt_description
+from src.timetables import CONTRACT_TYPES
 
 sys.path.append(dirname(__file__))
 

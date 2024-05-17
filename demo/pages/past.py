@@ -3,9 +3,7 @@ This page demonstrates backtesting a given contract type, and show IRR and cashf
 """
 
 import dash
-
 from dash import Input, Output, callback, dcc, html
-
 from src.backtest import run_backtest
 from src.plots.backtest_plots import (
     plot_cashflow,
@@ -58,7 +56,12 @@ def update_irr_graph(contract_params):
         contract_params=contract_params, annualized=annualized
     )
 
-    fig1 = plot_irr(df["date"], df["irr"], annualized=annualized)
+    fig1 = plot_irr(
+        df["date"],
+        df["irr"],
+        annualized=annualized,
+        ticker=contract_params["ticker"],
+    )
 
     return fig1, stats
 

@@ -8,10 +8,9 @@ from datetime import datetime
 
 import numpy as np
 import pandas as pd
-import polars as pl
 from qablet.black_scholes.mc import LVMCModel
 
-from src.model import CFModelPyCSV, get_cf
+from src.model import CFModelPyCSV, DataModel, get_cf
 from src.timetables import create_timetable
 from src.utils import compute_return
 
@@ -57,20 +56,14 @@ def update_dataset(pricing_ts, dataset, spot, params):
 
 
 def run_backtest(contract_params: dict, annualized: bool = True):
-    # load price data
+    # Create the models
     filename = ROOTDIR + "/data/spots.csv"
-
-    # get all month ends
-    df = pl.read_csv(
-        filename, try_parse_dates=True, infer_schema_length=None
-    ).set_sorted("date")
+    csvdata = DataModel(filename)
+    model = LVMCModel()
+    bk_model = CFModelPyCSV(filename=filename, base="USD")
 
     # Use current divs and risk free for historical pricings
     dataset = base_dataset()
-
-    # Create the models
-    model = LVMCModel()
-    bk_model = CFModelPyCSV(filename=filename, base="USD")
 
     results = []
     all_stats = []
@@ -83,8 +76,7 @@ def run_backtest(contract_params: dict, annualized: bool = True):
     for i in range(num_trials):
         pricing_ts = monthend_dates[i]  # timestamp of trading date
 
-        row_idx = df["date"].search_sorted(pricing_ts)
-        spot = df.item(row_idx, contract_params["ticker"])
+        spot = csvdata.get_value(contract_params["ticker"], pricing_ts)
 
         update_dataset(pricing_ts, dataset, spot, contract_params)
 
@@ -110,5 +102,4 @@ def run_backtest(contract_params: dict, annualized: bool = True):
         results,
         columns=["date", "irr"],
     )
-    # results.set_index("date", inplace=True)
     return df, {"stats": all_stats, "ts": all_ts}

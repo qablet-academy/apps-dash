@@ -4,7 +4,6 @@ Script to test "about contracts" without launching the app.
 import sys
 from os.path import dirname
 
-
 if __name__ == "__main__":
     sys.path.append(dirname(dirname(dirname(__file__))))
 

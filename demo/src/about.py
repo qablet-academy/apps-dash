@@ -4,12 +4,10 @@ Write about the contract in markdown.
 import os
 from datetime import datetime
 
-
 import pandas as pd
 import polars as pl
 
 from src.timetables import create_timetable
-
 
 ROOTDIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 

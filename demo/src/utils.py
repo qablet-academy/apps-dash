@@ -1,8 +1,12 @@
 """
 This module contains utility functions for the demo.
 """
+import os
+
 import numpy as np
 from scipy.optimize import minimize_scalar
+
+ROOTDIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 
 # IRR
@@ -31,4 +35,3 @@ def compute_return(
             raise ValueError(f"Optimization failed: {res.message}")
     except Exception:
         return None
-        # raise ValueError(f"IRR Excedption: {res.message}")

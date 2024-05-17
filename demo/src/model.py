@@ -10,7 +10,7 @@ TS_TO_YEARS = 1 / (365 * 24 * 3600 * 1e9)
 
 
 class CFModelPyCSV(CFModelPyBase):
-    """CFModel that uses data from a CSV."""
+    """CFModel that uses data from a CSV and interfaces with qablet cashflow model."""
 
     def __init__(self, filename, base):
         """Read the csv file on initialization. Assumes that there is a date column and the
@@ -43,3 +43,25 @@ def get_cf(pricing_ts, timetable, stats):
     ts_vec = timetable["events"]["time"].to_numpy()[idx_vec]
     yrs_vec = (ts_vec - pricing_ts.to_numpy()).astype(float) * TS_TO_YEARS
     return yrs_vec, cf_vec, ts_vec
+
+
+class DataModel:
+    """A Datamodel (for csv files) used by the app. We will keep it separate from
+    the qablet model."""
+
+    def __init__(self, filename):
+        self.data = pl.read_csv(
+            filename, try_parse_dates=True, infer_schema_length=None
+        ).set_sorted("date")
+
+    def get_value(self, unit, dt):
+        """Return value for given unit, on given datetime."""
+        row = self.data["date"].search_sorted(dt)
+        val = self.data.item(row, unit)
+        return val
+
+    def get_curve(self, unit, start, end):
+        """Return value for given unit, for given datetime range."""
+        return self.data.filter(pl.col("date") >= start).filter(
+            pl.col("date") <= end
+        )

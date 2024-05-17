@@ -6,10 +6,11 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 import plotly.express as px
-import pytz
-from src.model import MS_IN_DAY
 import plotly.graph_objects as go
+import pytz
 from plotly.subplots import make_subplots
+from src.model import MS_IN_DAY, DataModel
+from src.utils import ROOTDIR
 
 
 def plot_cashflow(prc_ts, cf):
@@ -46,7 +47,7 @@ def plot_cashflow(prc_ts, cf):
     return fig
 
 
-def plot_irr(x, y, annualized=True):
+def plot_irr(x, y, annualized=True, ticker="SPX"):
     """Plot a IRR scatter plot on the left, and histogram on the right."""
 
     if annualized:
@@ -56,13 +57,17 @@ def plot_irr(x, y, annualized=True):
     color = np.where(y < 0, "coral", "aquamarine")
 
     fig = make_subplots(
-        rows=1,
+        rows=2,
         cols=2,
         column_widths=[0.8, 0.2],
+        row_heights=[0.8, 0.2],
         shared_yaxes=True,
+        shared_xaxes=True,
         horizontal_spacing=0.0,
+        vertical_spacing=0.0,
     )
 
+    # IRR Scatter plot at top left
     fig.add_trace(
         go.Scatter(
             x=x,
@@ -88,15 +93,41 @@ def plot_irr(x, y, annualized=True):
     # Add a horizontal line at 0
     fig.add_hline(y=0.0)
 
-    fig.update_yaxes(title_text="Distribution", side="right", row=1, col=2)
+    # A plot for the ticker on the bottom sharing x axis with the scatter plot
+    filename = ROOTDIR + "/data/spots.csv"
+    csvdata = DataModel(filename)
+    tickerdf = csvdata.get_curve(
+        ticker, datetime(2019, 12, 31), datetime(2024, 4, 30)
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=tickerdf["date"],
+            y=tickerdf[ticker],
+            line=dict(color="grey", width=1),
+        ),
+        row=2,
+        col=1,
+    )
+
+    # Update IRR plot to have percentage y axis
+    fig.update_yaxes(
+        title_text=ylabel,
+        side="left",
+        row=1,
+        col=1,
+        color="aquamarine",
+        tickformat=",.1%",
+    )
+    # Update the ticker plot to be grey
+    fig.update_yaxes(
+        title_text=ticker, side="left", row=2, col=1, color="grey"
+    )
 
     fig.update_layout(
-        height=300,
+        height=400,
         margin={"l": 40, "b": 40, "t": 10, "r": 0},
         hovermode="closest",
-        yaxis={"tickformat": ",.1%"},
         template="plotly_dark",
-        yaxis_title=ylabel,
         showlegend=False,
     )
     return fig
