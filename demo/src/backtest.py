@@ -58,7 +58,7 @@ def update_dataset(pricing_ts, dataset, spot, params):
 
 def run_backtest(contract_params: dict, annualized: bool = True):
     # load price data
-    filename = ROOTDIR + "/data/SP500.csv"
+    filename = ROOTDIR + "/data/spots.csv"
 
     # get all month ends
     df = pl.read_csv(
@@ -76,7 +76,7 @@ def run_backtest(contract_params: dict, annualized: bool = True):
     all_stats = []
     all_ts = []
     monthend_dates = pd.bdate_range(
-        datetime(2020, 3, 31), datetime(2024, 4, 30), freq="1BME"
+        datetime(2019, 12, 31), datetime(2024, 4, 30), freq="1BME"
     )
     m_exp = 12
     num_trials = len(monthend_dates) - m_exp

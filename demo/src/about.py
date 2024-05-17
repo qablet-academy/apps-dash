@@ -17,7 +17,7 @@ ROOTDIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 def tt_description(contract_params: dict):
     # TODO: There is some duplication code here with run_backtest.
     # Create Contract
-    filename = ROOTDIR + "/data/SP500.csv"
+    filename = ROOTDIR + "/data/spots.csv"
 
     # get all month ends
     df = pl.read_csv(

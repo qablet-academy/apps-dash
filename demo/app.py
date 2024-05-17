@@ -42,7 +42,7 @@ report_nav = dbc.Nav(
 contract_editor = html.Div(
     [
         dcc.Dropdown(
-            ["SPX", "AAPL", "GOOGL"],
+            ["SPX", "EUR", "BTC"],
             "SPX",
             id="ctr-ticker",
         ),
