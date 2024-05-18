@@ -102,4 +102,8 @@ def run_backtest(contract_params: dict, annualized: bool = True):
         results,
         columns=["date", "irr"],
     )
-    return df, {"stats": all_stats, "ts": all_ts}
+    return df, {
+        "stats": all_stats,
+        "ts": all_ts,
+        "ticker": contract_params["ticker"],
+    }

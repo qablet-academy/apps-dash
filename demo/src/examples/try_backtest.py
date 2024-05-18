@@ -7,7 +7,7 @@ from os.path import dirname
 if __name__ == "__main__":
     sys.path.append(dirname(dirname(dirname(__file__))))
 
-    plot_type = "IRR"  # IRR or Cashflow
+    plot_type = "Cashflow"  # IRR or Cashflow
 
     from src.backtest import run_backtest
     from src.plots.backtest_plots import (
@@ -24,7 +24,9 @@ if __name__ == "__main__":
     if plot_type == "IRR":
         fig = plot_irr(df["date"], df["irr"], ticker=contract_params["ticker"])
     else:
-        idx = 3  # Select a trade
-        fig = plot_cashflow(stats["ts"][idx], stats["stats"][idx])
+        idx = 30  # Select a trade
+        fig = plot_cashflow(
+            stats["ts"][idx], stats["stats"][idx], stats["ticker"]
+        )
 
     fig.write_html("scratch/first_figure.html", auto_open=True)

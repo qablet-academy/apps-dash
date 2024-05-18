@@ -75,4 +75,6 @@ def update_backtest_cashflow(hoverData, stats):
     """Plot the cashflow of the selected trade date."""
 
     idx = hoverData["points"][0]["customdata"]
-    return plot_cashflow(stats["ts"][idx], stats["stats"][idx])
+    return plot_cashflow(
+        stats["ts"][idx], stats["stats"][idx], stats["ticker"]
+    )

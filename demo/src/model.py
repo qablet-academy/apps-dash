@@ -60,7 +60,7 @@ class DataModel:
         val = self.data.item(row, unit)
         return val
 
-    def get_curve(self, unit, start, end):
+    def get_curve(self, start, end):
         """Return value for given unit, for given datetime range."""
         return self.data.filter(pl.col("date") >= start).filter(
             pl.col("date") <= end
