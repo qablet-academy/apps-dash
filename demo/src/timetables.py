@@ -1,12 +1,18 @@
 """
 Create timetables for different contracts, using the contract parameters dict.
 """
-from qablet_contracts.eq.autocall import AutoCallable
+from qablet_contracts.eq.autocall import DiscountCert, ReverseCB
 from qablet_contracts.eq.barrier import OptionKO
 from qablet_contracts.eq.cliquet import Accumulator
 from qablet_contracts.eq.vanilla import Option
 
-CONTRACT_TYPES = ["AutoCallable", "KnockOut", "VanillaOption", "Cliquet"]
+CONTRACT_TYPES = [
+    "Discount Certificate",
+    "Reverse Convertible",
+    "Knockout Option",
+    "Vanilla Option",
+    "Cliquet",
+]
 
 
 def create_timetable(pricing_ts, monthend_dates, spot, trial, params):
@@ -14,15 +20,19 @@ def create_timetable(pricing_ts, monthend_dates, spot, trial, params):
     contract_type = params["ctr-type"]
 
     # switch case for different contract types
-    if contract_type == "AutoCallable":
+    if contract_type == "Discount Certificate":
         return create_autocallable_timetable(
             pricing_ts, monthend_dates, spot, trial, params
         )
-    elif contract_type == "KnockOut":
+    if contract_type == "Reverse Convertible":
+        return create_reverse_cb_timetable(
+            pricing_ts, monthend_dates, spot, trial, params
+        )
+    elif contract_type == "Knockout Option":
         return create_barrier_timetable(
             pricing_ts, monthend_dates, spot, trial, params
         )
-    elif contract_type == "VanillaOption":
+    elif contract_type == "Vanilla Option":
         return create_vanilla_timetable(
             pricing_ts, monthend_dates, spot, trial, params
         )
@@ -43,9 +53,33 @@ def create_autocallable_timetable(
     m_per = 3
     m_exp = 12
     barrier_dts = monthend_dates[trial + m_per : trial + m_exp + 1 : m_per]
-    cpn_rate = 0.05
+    cpn_rate = 0.15
 
-    return AutoCallable(
+    return DiscountCert(
+        ccy="USD",
+        asset_name=ticker,
+        initial_spot=spot,
+        strike=80,  # percent
+        accrual_start=pricing_ts,
+        maturity=barrier_dts[-1],
+        barrier=100,
+        barrier_dates=barrier_dts,
+        cpn_rate=cpn_rate,
+    )
+
+
+def create_reverse_cb_timetable(
+    pricing_ts, monthend_dates, spot, trial, params
+):
+    """Create the timetable for the autocallable."""
+    ticker = params["ticker"]
+
+    m_per = 3
+    m_exp = 12
+    barrier_dts = monthend_dates[trial + m_per : trial + m_exp + 1 : m_per]
+    cpn_rate = 0.15
+
+    return ReverseCB(
         ccy="USD",
         asset_name=ticker,
         initial_spot=spot,

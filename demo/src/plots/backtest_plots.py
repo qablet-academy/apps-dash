@@ -4,7 +4,6 @@ Methods to crete figures for the backtest page.
 from datetime import datetime
 
 import numpy as np
-import pandas as pd
 import plotly.graph_objects as go
 import pytz
 from plotly.subplots import make_subplots
@@ -12,7 +11,8 @@ from src.model import MS_IN_DAY, DataModel
 from src.utils import ROOTDIR
 
 
-def plot_cashflow(prc_ts, cf, ticker):
+def plot_cashflow(ts_data, cf, ticker):
+    prc_ts, end_ts = ts_data
     trade_price = cf[2]
     x = np.insert(cf[0], 0, prc_ts // 1000000)
     x = np.array(x).astype("datetime64[ms]")
@@ -37,12 +37,12 @@ def plot_cashflow(prc_ts, cf, ticker):
     # Annotate the trade and the last cashflow date
     datefmt = "%Y-%m-%d"
     prc_dt = datetime.fromtimestamp(prc_ts // 1000000000, pytz.utc)
+    end_dt = datetime.fromtimestamp(end_ts, pytz.utc)
     fig.add_annotation(
         x=prc_dt,
         text=f"Trade Date<br><b>{prc_dt.strftime(datefmt)}</b>",
         # f"<br>Trade Price<br><b>{trade_price:.2f}</b>",
     )
-    end_dt = pd.to_datetime(x[-1])
     fig.add_annotation(
         x=end_dt,
         text=f"Maturity<br><b>{end_dt.strftime(datefmt)}</b>",

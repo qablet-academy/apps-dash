@@ -38,9 +38,16 @@ class CFModelPyCSV(CFModelPyBase):
 
 def get_cf(pricing_ts, timetable, stats):
     """Return cashflows and years for a given timetable and stats."""
-    cf_vec = stats["value"].to_numpy()
-    idx_vec = stats["index"].to_numpy()
-    ts_vec = timetable["events"]["time"].to_numpy()[idx_vec]
+
+    df = pl.from_arrow(stats)
+    # get the timestamp of the events, corrsponding to the index in the stats
+    ts_col = pl.from_arrow(timetable["events"]["time"])[df["index"]]
+    df = df.with_columns(ts=ts_col)
+    # net cashflows by timestamp
+    df = df.group_by("ts").agg(pl.col("value").sum())
+
+    cf_vec = df["value"].to_numpy()
+    ts_vec = df["ts"].to_numpy()
     yrs_vec = (ts_vec - pricing_ts.to_numpy()).astype(float) * TS_TO_YEARS
     return yrs_vec, cf_vec, ts_vec
 

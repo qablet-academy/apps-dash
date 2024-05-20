@@ -50,7 +50,10 @@ def update_irr_graph(contract_params):
     """Run the backtest and plot the returns for each trade date.
     The hover in this plot triggers the cashflow plot."""
 
-    annualized = contract_params["ctr-type"] in ["AutoCallable"]
+    annualized = contract_params["ctr-type"] in [
+        "Discount Certificate",
+        "Reverse Convertible",
+    ]
 
     df, stats = run_backtest(
         contract_params=contract_params, annualized=annualized

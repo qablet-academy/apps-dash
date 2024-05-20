@@ -3,7 +3,6 @@ Run backtest for a given contract. The backtest is run on a historical dataset.
 Return the a dataframe with IRR for each trade date,
 and a dict with the cashflow for each trade date.
 """
-import os
 from datetime import datetime
 
 import numpy as np
@@ -14,7 +13,7 @@ from src.model import CFModelPyCSV, DataModel, get_cf
 from src.timetables import create_timetable
 from src.utils import compute_return
 
-ROOTDIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+from src.utils import ROOTDIR
 
 
 def base_dataset():
@@ -96,7 +95,9 @@ def run_backtest(contract_params: dict, annualized: bool = True):
         all_stats.append(
             (ts_vec.astype("uint64").tolist(), cf_vec.tolist(), px)
         )
-        all_ts.append(pricing_ts.value)
+        end_dt = timetable["events"]["time"][-1].as_py().timestamp()
+
+        all_ts.append((pricing_ts.value, end_dt))
 
     df = pd.DataFrame(
         results,

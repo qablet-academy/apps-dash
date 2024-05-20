@@ -1,5 +1,5 @@
 """
-Script to test the backtest page without launching the app.
+Script to test the plots in the backtest page without launching the app.
 """
 import sys
 from os.path import dirname
@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
     contract_params = {
         "ticker": "SPX",
-        "ctr-type": "VanillaOption",
+        "ctr-type": "Reverse Convertible",
     }
     df, stats = run_backtest(contract_params, annualized=False)
 
