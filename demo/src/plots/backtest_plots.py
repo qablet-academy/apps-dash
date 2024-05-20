@@ -21,7 +21,13 @@ def plot_cashflow(ts_data, cf, ticker):
 
     color = np.where(y < 0, "coral", "aquamarine")
 
-    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    fig = make_subplots(
+        rows=2,
+        cols=1,
+        row_heights=[0.7, 0.3],
+        shared_xaxes=True,
+        vertical_spacing=0.0,
+    )
 
     # TODO: Net cashflows on same date. either here or in get_cf.
     fig.add_trace(
@@ -31,7 +37,8 @@ def plot_cashflow(ts_data, cf, ticker):
             width=MS_IN_DAY * 2,
             marker_color=color,
         ),
-        secondary_y=False,
+        row=1,
+        col=1,
     )
 
     # Annotate the trade and the last cashflow date
@@ -41,7 +48,6 @@ def plot_cashflow(ts_data, cf, ticker):
     fig.add_annotation(
         x=prc_dt,
         text=f"Trade Date<br><b>{prc_dt.strftime(datefmt)}</b>",
-        # f"<br>Trade Price<br><b>{trade_price:.2f}</b>",
     )
     fig.add_annotation(
         x=end_dt,
@@ -56,9 +62,10 @@ def plot_cashflow(ts_data, cf, ticker):
         go.Scatter(
             x=tickerdf["date"],
             y=tickerdf[ticker],
-            line=dict(color="grey", width=1),
+            line=dict(color="dimgrey", width=1),
         ),
-        secondary_y=True,
+        row=2,
+        col=1,
     )
     fig.update_layout(
         height=225,
@@ -68,12 +75,13 @@ def plot_cashflow(ts_data, cf, ticker):
     )
     fig.update_yaxes(
         title_text="Cashflow",
-        side="right",
+        side="left",
         color="aquamarine",
-        secondary_y=False,
+        row=1,
+        col=1,
     )
     fig.update_yaxes(
-        title_text=ticker, side="left", color="grey", secondary_y=True
+        title_text=ticker, side="left", color="dimgrey", row=2, col=1
     )
     return fig
 

@@ -53,7 +53,7 @@ def create_autocallable_timetable(
     m_per = 3
     m_exp = 12
     barrier_dts = monthend_dates[trial + m_per : trial + m_exp + 1 : m_per]
-    cpn_rate = 0.15
+    cpn_rate = 0.16
 
     return DiscountCert(
         ccy="USD",
