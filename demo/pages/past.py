@@ -17,14 +17,16 @@ layout = html.Div(
         html.Div(
             [
                 # IRR graph on the top, and cashflow graph below.
-                html.P("Returns for each Trade Date"),
+                html.P(
+                    "Historical Returns for Trade Dates between Dec'19-Apr'24."
+                ),
                 dcc.Graph(
                     id="past-irr",
                     hoverData={"points": [{"customdata": 0}]},
                 ),
                 html.Br(),
                 html.P(
-                    "Cashflow of selected Trade. Hover on plot above to select trade."
+                    "Cashflow of selected Trade. Hover on the points above to select a trade."
                 ),
                 dcc.Graph(id="past-cf"),
             ],

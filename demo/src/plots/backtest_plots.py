@@ -24,7 +24,7 @@ def plot_cashflow(ts_data, cf, ticker):
     fig = make_subplots(
         rows=2,
         cols=1,
-        row_heights=[0.7, 0.3],
+        row_heights=[0.6, 0.4],
         shared_xaxes=True,
         vertical_spacing=0.0,
     )
@@ -68,7 +68,7 @@ def plot_cashflow(ts_data, cf, ticker):
         col=1,
     )
     fig.update_layout(
-        height=225,
+        height=250,
         margin={"l": 40, "b": 40, "t": 10, "r": 0},
         template="plotly_dark",
         showlegend=False,
@@ -80,8 +80,37 @@ def plot_cashflow(ts_data, cf, ticker):
         row=1,
         col=1,
     )
+    start_spot = tickerdf[ticker][0]
+
     fig.update_yaxes(
-        title_text=ticker, side="left", color="dimgrey", row=2, col=1
+        title_text=ticker,
+        side="right",
+        color="dimgrey",
+        showticklabels=False,
+        tickvals=[start_spot],
+        row=2,
+        col=1,
+    )
+    fig.add_annotation(
+        x=prc_dt,
+        y=start_spot,
+        text=f"{start_spot}",
+        showarrow=False,
+        xanchor="right",
+        font=dict(color="dimgrey"),
+        row=2,
+        col=1,
+    )
+    end_spot = tickerdf[ticker][-1]
+    fig.add_annotation(
+        x=end_dt,
+        y=end_spot,
+        text=f"{end_spot}",
+        showarrow=False,
+        xanchor="left",
+        font=dict(color="dimgrey"),
+        row=2,
+        col=1,
     )
     return fig
 
