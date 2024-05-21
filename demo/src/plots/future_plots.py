@@ -8,7 +8,20 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 
-def plot_cf_vs_spot(x, y, ticker):
+def plot_cf_vs_spot(cfsums, spot, params):
+    if params["ctr-type"] in [
+        "Knockout Option",
+        "Vanilla Option",
+    ]:
+        y = cfsums[0] / spot
+        title = "Cashflow of Contract (% of Spot)"
+    else:
+        y = cfsums[0] / 100
+        title = "Cashflow of Contract (% of Notional)"
+
+    x = cfsums[1] / spot - 1
+    ticker = params["ticker"]
+
     color = np.where(y < 0, "coral", "aquamarine")
 
     fig = make_subplots(
@@ -69,10 +82,11 @@ def plot_cf_vs_spot(x, y, ticker):
         tickformat=",.1%",
     )
     fig.update_yaxes(
-        title_text="Cashflow of Contract",
+        title_text=title,
         row=2,
         col=1,
         color="aquamarine",
+        tickformat=",.1%",
     )
 
     fig.update_xaxes(visible=False, row=2, col=2)

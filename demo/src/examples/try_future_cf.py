@@ -13,8 +13,8 @@ if __name__ == "__main__":
         "ticker": "SPX",
         "ctr-type": "Reverse Convertible",
     }
-    x, y = model_cashflows(contract_params)
+    cfsums, spot = model_cashflows(contract_params)
 
-    fig = plot_cf_vs_spot(x, y, ticker=contract_params["ticker"])
+    fig = plot_cf_vs_spot(cfsums, spot, params=contract_params)
 
     fig.write_html("scratch/first_figure.html", auto_open=True)

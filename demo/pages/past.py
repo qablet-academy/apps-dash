@@ -47,7 +47,7 @@ layout = html.Div(
     Output("past-data", "data"),
     Input("ctr-params", "data"),
 )
-def update_irr_graph(contract_params):
+def update_past_irr(contract_params):
     """Run the backtest and plot the returns for each trade date.
     The hover in this plot triggers the cashflow plot."""
 
@@ -75,7 +75,7 @@ def update_irr_graph(contract_params):
     Input("past-irr", "hoverData"),
     Input("past-data", "data"),
 )
-def update_backtest_cashflow(hoverData, stats):
+def update_past_cashflow(hoverData, stats):
     """Plot the cashflow of the selected trade date."""
 
     idx = hoverData["points"][0]["customdata"]

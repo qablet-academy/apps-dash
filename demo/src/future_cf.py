@@ -56,12 +56,4 @@ def model_cashflows(contract_params: dict, trial=0):
             sum = sum + v
         sums.append(sum)
 
-    if contract_params["ctr-type"] in [
-        "Knockout Option",
-        "Vanilla Option",
-    ]:
-        contract_ret = 100 * sums[0] / spot
-    else:
-        contract_ret = sums[0]
-
-    return sums[1] / spot - 1, contract_ret
+    return sums, spot

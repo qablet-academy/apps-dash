@@ -48,11 +48,11 @@ layout = html.Div(
     Output("future-returns", "figure"),
     Input("ctr-params", "data"),
 )
-def update_about(contract_params):
+def update_future_returns(contract_params):
     """Generate cashflows from model and plot returns."""
 
-    x, y = model_cashflows(contract_params)
+    cfsums, spot = model_cashflows(contract_params)
 
-    fig = plot_cf_vs_spot(x, y, ticker=contract_params["ticker"])
+    fig = plot_cf_vs_spot(cfsums, spot, params=contract_params)
 
     return fig
