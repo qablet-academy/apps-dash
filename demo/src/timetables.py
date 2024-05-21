@@ -1,13 +1,13 @@
 """
 Create timetables for different contracts, using the contract parameters dict.
 """
+import polars as pl
+import pyarrow as pa
 from qablet_contracts.eq.autocall import DiscountCert, ReverseCB
 from qablet_contracts.eq.barrier import OptionKO
 from qablet_contracts.eq.cliquet import Accumulator
 from qablet_contracts.eq.vanilla import Option
 from qablet_contracts.timetable import TS_EVENT_SCHEMA
-import polars as pl
-import pyarrow as pa
 
 CONTRACT_TYPES = [
     "Discount Certificate",

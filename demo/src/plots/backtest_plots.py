@@ -11,6 +11,21 @@ from src.model import MS_IN_DAY, DataModel
 from src.utils import ROOTDIR
 
 
+def blank_figure():
+    """Create a blank figure with no data, while the initial callback runs."""
+
+    fig = go.Figure(go.Scatter(x=[], y=[]))
+    fig.update_xaxes(showgrid=False, showticklabels=False, zeroline=False)
+    fig.update_yaxes(showgrid=False, showticklabels=False, zeroline=False)
+    fig.update_layout(
+        height=250,
+        margin={"l": 40, "b": 40, "t": 10, "r": 0},
+        template="plotly_dark",
+        showlegend=False,
+    )
+    return fig
+
+
 def plot_cashflow(ts_data, cf, ticker):
     prc_ts, end_ts = ts_data
     trade_price = cf[2]
@@ -29,7 +44,6 @@ def plot_cashflow(ts_data, cf, ticker):
         vertical_spacing=0.0,
     )
 
-    # TODO: Net cashflows on same date. either here or in get_cf.
     fig.add_trace(
         go.Bar(
             x=x,

@@ -5,7 +5,6 @@ Methods to crete figures for the future page.
 
 import numpy as np
 import plotly.graph_objects as go
-
 from plotly.subplots import make_subplots
 
 
@@ -70,7 +69,7 @@ def plot_cf_vs_spot(x, y, ticker):
         tickformat=",.1%",
     )
     fig.update_yaxes(
-        title_text="Total Cashflow of Contract",
+        title_text="Cashflow of Contract",
         row=2,
         col=1,
         color="aquamarine",

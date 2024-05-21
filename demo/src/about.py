@@ -5,9 +5,8 @@ from datetime import datetime
 
 import pandas as pd
 
-from src.timetables import create_timetable
 from src.model import DataModel
-
+from src.timetables import create_timetable
 from src.utils import ROOTDIR
 
 

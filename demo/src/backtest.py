@@ -8,9 +8,7 @@ from qablet.black_scholes.mc import LVMCModel
 
 from src.model import CFModelPyCSV, DataModel, get_cf
 from src.timetables import create_timetable
-from src.utils import compute_return
-
-from src.utils import ROOTDIR, base_dataset, update_dataset
+from src.utils import ROOTDIR, base_dataset, compute_return, update_dataset
 
 
 def run_backtest(contract_params: dict, annualized: bool = True):

@@ -6,8 +6,8 @@ from os.path import dirname
 
 if __name__ == "__main__":
     sys.path.append(dirname(dirname(dirname(__file__))))
-    from src.plots.future_plots import plot_cf_vs_spot
     from src.future_cf import model_cashflows
+    from src.plots.future_plots import plot_cf_vs_spot
 
     contract_params = {
         "ticker": "SPX",

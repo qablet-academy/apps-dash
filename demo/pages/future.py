@@ -1,11 +1,12 @@
 """
-This page demonstrates backtesting a given contract type, and show IRR and cashflow.
+This page shows future returns projected by model.
 """
 
 import dash
 from dash import Input, Output, callback, dcc, html
-from src.plots.future_plots import plot_cf_vs_spot
 from src.future_cf import model_cashflows
+from src.plots.backtest_plots import blank_figure
+from src.plots.future_plots import plot_cf_vs_spot
 
 dash.register_page(__name__)
 
@@ -15,7 +16,10 @@ layout = html.Div(
             [
                 # Contract vs Spots Graph.
                 html.P("Contract vs Spot Returns"),
-                dcc.Graph(id="future-about"),
+                dcc.Graph(
+                    id="future-returns",
+                    figure=blank_figure(),
+                ),
                 html.Br(),
                 dcc.Markdown(
                     """
@@ -41,12 +45,11 @@ layout = html.Div(
 
 
 @callback(
-    Output("future-about", "figure"),
+    Output("future-returns", "figure"),
     Input("ctr-params", "data"),
 )
 def update_about(contract_params):
-    """Run the backtest and plot the returns for each trade date.
-    The hover in this plot triggers the cashflow plot."""
+    """Generate cashflows from model and plot returns."""
 
     x, y = model_cashflows(contract_params)
 

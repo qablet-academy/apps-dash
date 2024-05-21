@@ -5,12 +5,10 @@ This page demonstrates backtesting a given contract type, and show IRR and cashf
 import dash
 from dash import Input, Output, callback, dcc, html
 from src.backtest import run_backtest
-from src.plots.backtest_plots import (
-    plot_cashflow,
-    plot_irr,
-)
+from src.plots.backtest_plots import blank_figure, plot_cashflow, plot_irr
 
 dash.register_page(__name__, path="/")
+
 
 layout = html.Div(
     [
@@ -22,13 +20,14 @@ layout = html.Div(
                 ),
                 dcc.Graph(
                     id="past-irr",
+                    figure=blank_figure(),
                     hoverData={"points": [{"customdata": 0}]},
                 ),
                 html.Br(),
                 html.P(
                     "Cashflow of selected Trade. Hover on the points above to select a trade."
                 ),
-                dcc.Graph(id="past-cf"),
+                dcc.Graph(id="past-cf", figure=blank_figure()),
             ],
             style={"display": "inline-block", "width": "95%"},
         ),

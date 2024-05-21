@@ -4,17 +4,15 @@ Project Future Cashflows for a given contract.
 from datetime import datetime
 
 import pandas as pd
+from qablet.base.flags import Stats
 from qablet.black_scholes.mc import LVMCModel
 
 from src.model import DataModel
 from src.timetables import (
+    create_forward_timetable,
     create_timetable,
     extend_timetable,
-    create_forward_timetable,
 )
-from qablet.base.flags import Stats
-
-
 from src.utils import ROOTDIR, base_dataset, update_dataset
 
 
@@ -24,7 +22,7 @@ def model_cashflows(contract_params: dict, trial=0):
     csvdata = DataModel(filename)
     model = LVMCModel()
 
-    # Use current divs and risk free for historical pricings
+    # prepare dataset, and turn on cashflow flag
     dataset = base_dataset()
     dataset["MC"]["FLAGS"] = Stats.CASHFLOW
     dataset["MC"]["PATHS"] = 100  # Too many dots otherwise
@@ -37,6 +35,7 @@ def model_cashflows(contract_params: dict, trial=0):
     spot = csvdata.get_value(contract_params["ticker"], pricing_ts)
     update_dataset(pricing_ts, dataset, spot, contract_params)
 
+    # create timetable for contract
     timetable = create_timetable(
         pricing_ts, monthend_dates, spot, trial, contract_params
     ).timetable()
@@ -57,4 +56,12 @@ def model_cashflows(contract_params: dict, trial=0):
             sum = sum + v
         sums.append(sum)
 
-    return sums[1] / spot - 1, sums[0]
+    if contract_params["ctr-type"] in [
+        "Knockout Option",
+        "Vanilla Option",
+    ]:
+        contract_ret = 100 * sums[0] / spot
+    else:
+        contract_ret = sums[0]
+
+    return sums[1] / spot - 1, contract_ret
