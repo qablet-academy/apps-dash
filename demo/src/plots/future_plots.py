@@ -16,7 +16,7 @@ def plot_cf_vs_spot(x, y, ticker):
         rows=2,
         cols=2,
         column_widths=[0.9, 0.1],
-        row_heights=[0.9, 0.1],
+        row_heights=[0.1, 0.9],
         shared_yaxes=True,
         shared_xaxes=True,
         horizontal_spacing=0.0,
@@ -31,7 +31,7 @@ def plot_cf_vs_spot(x, y, ticker):
             mode="markers",
             marker=dict(color=color, size=12, opacity=0.4),
         ),
-        row=1,
+        row=2,
         col=1,
     )
 
@@ -42,7 +42,7 @@ def plot_cf_vs_spot(x, y, ticker):
             nbinsy=20,
             marker_color="aquamarine",
         ),
-        row=1,
+        row=2,
         col=2,
     )
     # Add a horizontal line at 0
@@ -55,7 +55,7 @@ def plot_cf_vs_spot(x, y, ticker):
             nbinsy=20,
             marker_color="dimgrey",
         ),
-        row=2,
+        row=1,
         col=1,
     )
     # Add a vertical line at 0
@@ -71,13 +71,13 @@ def plot_cf_vs_spot(x, y, ticker):
     )
     fig.update_yaxes(
         title_text="Total Cashflow of Contract",
-        row=1,
+        row=2,
         col=1,
         color="aquamarine",
     )
 
-    fig.update_xaxes(visible=False, row=1, col=2)
-    fig.update_yaxes(visible=False, row=2, col=1)
+    fig.update_xaxes(visible=False, row=2, col=2)
+    fig.update_yaxes(visible=False, row=1, col=1)
 
     fig.update_layout(
         height=500,

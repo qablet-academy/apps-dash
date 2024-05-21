@@ -13,18 +13,20 @@ layout = html.Div(
     [
         html.Div(
             [
-                # IRR graph on the top, and cashflow graph below.
+                # Contract vs Spots Graph.
+                html.P("Contract vs Spot Returns"),
+                dcc.Graph(id="future-about"),
+                html.Br(),
                 dcc.Markdown(
                     """
-                    The *cashflow of the contract* depends on the future spot prices.
-                    For a vanilla option it relates to the *return at maturity* alone. However,
-                    the presence of knockouts and calls make the cashflow dependent on prices
+                    The cashflow of the **contract** depends on the spot returns.
+                    For a vanilla option it relates to the **return at maturity** alone. However,
+                    for other contracts, knockouts and calls make the cashflow depend on prices
                     prior to maturity.
-                    In the plot below, a *pricing model* produced the projection of future
-                    asset returns, and consequently the cashflows.
+                    In the plot above, a **pricing model** produced the projection of future
+                    asset returns.
                 """
                 ),
-                dcc.Graph(id="future-about"),
             ],
             style={"display": "inline-block", "width": "95%"},
         ),
