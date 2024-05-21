@@ -5,6 +5,9 @@ from qablet_contracts.eq.autocall import DiscountCert, ReverseCB
 from qablet_contracts.eq.barrier import OptionKO
 from qablet_contracts.eq.cliquet import Accumulator
 from qablet_contracts.eq.vanilla import Option
+from qablet_contracts.timetable import TS_EVENT_SCHEMA
+import polars as pl
+import pyarrow as pa
 
 CONTRACT_TYPES = [
     "Discount Certificate",
@@ -146,3 +149,26 @@ def create_cliquet_timetable(pricing_ts, monthend_dates, spot, trial, params):
         local_cap=0.05,
         local_floor=-0.05,
     )
+
+
+def extend_timetable(tt1, tt2):
+    """Extend the tt1 with new events, in place.
+    Assume that all events in tt2 are after the last event in tt1."""
+    df1 = pl.from_arrow(tt1["events"])
+    df2 = pl.from_arrow(tt2["events"])
+    tt1["events"] = df1.extend(df2)._df.to_arrow()[0].cast(TS_EVENT_SCHEMA)
+
+
+def create_forward_timetable(end_dt, params):
+    events = [
+        {
+            "track": "F",
+            "time": end_dt,
+            "op": "+",
+            "quantity": 1,
+            "unit": params["ticker"],
+        }
+    ]
+
+    events_table = pa.RecordBatch.from_pylist(events, schema=TS_EVENT_SCHEMA)
+    return {"events": events_table, "expressions": {}}

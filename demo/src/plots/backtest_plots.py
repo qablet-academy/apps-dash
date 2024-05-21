@@ -119,9 +119,9 @@ def plot_irr(x, y, annualized=True, ticker="SPX"):
     """Plot a IRR scatter plot on the left, and histogram on the right."""
 
     if annualized:
-        ylabel = "Annualized Return by Trade Date"
+        ylabel = "Annualized Return"
     else:
-        ylabel = "Gain/Loss by Trade Date"
+        ylabel = "Gain/Loss %"
     color = np.where(y < 0, "coral", "aquamarine")
 
     fig = make_subplots(

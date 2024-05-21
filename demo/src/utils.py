@@ -35,3 +35,41 @@ def compute_return(
             raise ValueError(f"Optimization failed: {res.message}")
     except Exception:
         return None
+
+
+def base_dataset():
+    """Create the base dataset. Asset data and model parameters will be
+    added later, specific to each pricing date."""
+    return {
+        "MC": {
+            "PATHS": 10_000,
+            "TIMESTEP": 100,  # BSM doesn't need small timesteps
+            "SEED": 1,
+        },
+        "BASE": "USD",
+    }
+
+
+def update_dataset(pricing_ts, dataset, spot, params):
+    """update assets data with equity forwards (need only one)."""
+
+    ticker = params["ticker"]
+
+    # Rates and divs data
+    times = np.array([0.0, 2.0])
+    rates = np.array([0.03, 0.03])
+    discount_data = ("ZERO_RATES", np.column_stack((times, rates)))
+    assets_data = {"USD": discount_data}
+    divs = 0.02  # get_divs(basket)
+
+    fwds = spot * np.exp((rates - divs) * times)
+    assets_data[ticker] = ("FORWARDS", np.column_stack((times, fwds)))
+
+    # update dataset
+    dataset["PRICING_TS"] = int(pricing_ts.value / 1e6)  # ns to ms timestamp
+    dataset["ASSETS"] = assets_data
+    dataset["LV"] = {
+        "ASSET": ticker,
+        "VOL": 0.3,  # hardcoded vol (use vix perhaps?)
+    }
+    return spot

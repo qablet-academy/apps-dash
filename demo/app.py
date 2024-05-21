@@ -34,7 +34,7 @@ report_nav = dbc.Nav(
         )
         for page in dash.page_registry.values()
     ],
-    vertical=True,
+    vertical=False,
     pills=True,
 )
 
