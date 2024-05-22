@@ -16,7 +16,7 @@ from src.timetables import (
 from src.utils import ROOTDIR, base_dataset, update_dataset
 
 
-def model_cashflows(contract_params: dict, trial=0):
+def model_cashflows(contract_params: dict, trial=0, vol=0.3):
     # Create the models
     filename = ROOTDIR + "/data/spots.csv"
     csvdata = DataModel(filename)
@@ -34,6 +34,7 @@ def model_cashflows(contract_params: dict, trial=0):
 
     spot = csvdata.get_value(contract_params["ticker"], pricing_ts)
     update_dataset(pricing_ts, dataset, spot, contract_params)
+    dataset["LV"]["VOL"] = vol
 
     # create timetable for contract
     timetable = create_timetable(

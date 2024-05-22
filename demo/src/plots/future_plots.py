@@ -19,7 +19,7 @@ def plot_cf_vs_spot(cfsums, spot, params):
         y = cfsums[0] / 100
         title = "Cashflow of Contract (% of Notional)"
 
-    x = cfsums[1] / spot - 1
+    x = cfsums[1] * 1.0305 / spot - 1
     ticker = params["ticker"]
 
     color = np.where(y < 0, "coral", "aquamarine")
@@ -80,6 +80,7 @@ def plot_cf_vs_spot(cfsums, spot, params):
         col=1,
         color="grey",
         tickformat=",.1%",
+        range=[-0.75, 1.25],
     )
     fig.update_yaxes(
         title_text=title,
@@ -87,6 +88,7 @@ def plot_cf_vs_spot(cfsums, spot, params):
         col=1,
         color="aquamarine",
         tickformat=",.1%",
+        range=[-0.75, 1.25],
     )
 
     fig.update_xaxes(visible=False, row=2, col=2)

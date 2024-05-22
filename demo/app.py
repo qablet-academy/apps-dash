@@ -68,7 +68,10 @@ contract_editor = html.Div(
 sidebar = html.Div(
     [
         html.Img(src="assets/logo.png", width="50%"),
-        html.P("What would you explore?", className="lead"),
+        html.P(
+            "Explore a variety of financial contracts through two lenses.",
+            className="lead",
+        ),
         report_nav,
         html.Br(),
         html.H2("Contract"),

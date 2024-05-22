@@ -109,7 +109,7 @@ def create_barrier_timetable(pricing_ts, monthend_dates, spot, trial, params):
         strike=spot,
         maturity=barrier_dts[-1],
         is_call=True,
-        barrier=spot * 1.1,
+        barrier=spot * 1.2,
         barrier_type="Up/Out",
         barrier_dates=barrier_dts,
         rebate=spot * 0.01,
