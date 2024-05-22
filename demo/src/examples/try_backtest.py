@@ -4,7 +4,8 @@ Script to test the plots in the backtest page without launching the app.
 import sys
 from os.path import dirname
 
-if __name__ == "__main__":
+
+def main():
     sys.path.append(dirname(dirname(dirname(__file__))))
 
     plot_type = "Cashflow"  # IRR or Cashflow
@@ -30,3 +31,7 @@ if __name__ == "__main__":
         )
 
     fig.write_html("scratch/first_figure.html", auto_open=True)
+
+
+if __name__ == "__main__":
+    main()
