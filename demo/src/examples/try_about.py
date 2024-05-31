@@ -11,7 +11,7 @@ if __name__ == "__main__":
 
     contract_params = {
         "ticker": "SPX",
-        "ctr-type": "VanillaOption",
+        "ctr-type": "Vanilla Option",
     }
     text = tt_description(contract_params)
     print(text)

@@ -6,6 +6,7 @@ import dash
 from dash import Input, Output, callback, dcc, html
 from src.backtest import run_backtest
 from src.plots.backtest_plots import blank_figure, plot_cashflow, plot_irr
+from dash.exceptions import PreventUpdate
 
 dash.register_page(__name__, path="/")
 
@@ -78,7 +79,9 @@ def update_past_irr(contract_params):
 def update_past_cashflow(hoverData, stats):
     """Plot the cashflow of the selected trade date."""
 
-    idx = hoverData["points"][0]["customdata"]
+    idx = hoverData["points"][0].get("customdata")
+    if idx is None:
+        raise PreventUpdate
     return plot_cashflow(
         stats["ts"][idx], stats["stats"][idx], stats["ticker"]
     )
