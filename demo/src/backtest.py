@@ -2,7 +2,7 @@
 Method to run backtest for a given contract.
 """
 from datetime import datetime
-# importing the pandas 
+
 import pandas as pd
 from qablet.black_scholes.mc import LVMCModel
 
@@ -29,9 +29,10 @@ def run_backtest(contract_params: dict, annualized: bool = True):
     results = []
     all_stats = []
     all_ts = []
-    monthend_dates = pd.bdate_range(
-        datetime(2019, 12, 31), datetime(2024, 4, 30), freq="1BME"
-    )
+    
+    # Fetch adjusted month-end dates using the monthend_dates method
+    monthend_dates = csvdata.monthend_dates(contract_params["ticker"])
+
     m_exp = 12
     num_trials = len(monthend_dates) - m_exp
     for i in range(num_trials):

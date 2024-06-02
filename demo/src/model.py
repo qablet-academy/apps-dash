@@ -3,7 +3,11 @@ A Cashflow Model using data from a CSV file parsed into a polars dataframe.
 """
 
 import polars as pl
+import pandas as pd  # Add this import statement for pandas
+from datetime import datetime,timedelta  # Add this import statement for datetime
+
 from qablet.base.cf import CFModelPyBase
+
 
 MS_IN_DAY = 1000 * 3600 * 24
 TS_TO_YEARS = 1 / (365 * 24 * 3600 * 1e9)
@@ -72,3 +76,30 @@ class DataModel:
         return self.data.filter(pl.col("date") >= start).filter(
             pl.col("date") <= end
         )
+    
+
+    def monthend_dates(self, ticker):
+        """Return monthend dates for a given range."""
+        start_date = datetime(2019, 12, 31)
+        end_date = datetime(2024, 4, 30)
+        monthend_dates = []
+
+        current_date = start_date
+        while current_date <= end_date:
+            if current_date.month == 12:
+                monthend_dates.append(current_date)
+                current_date += timedelta(days=31)  # Move to next year
+            else:
+                monthend_dates.append(current_date)
+                current_date += timedelta(days=31)
+
+        # Get valid dates using something like this
+        valid_dates = self.data.drop_nulls()["date"]
+
+        # Adjust the dates to the nearest trading date for that ticker (on or before)
+        adjusted_dates = []
+        for date in monthend_dates:
+            idx = valid_dates.search_sorted(date, side="right") - 1
+            adjusted_dates.append(valid_dates[idx])
+
+        return adjusted_dates
