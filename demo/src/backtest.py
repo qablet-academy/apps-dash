@@ -6,7 +6,7 @@ from src.model import CFModelPyCSV, DataModel, get_cf
 from src.timetables import create_timetable
 from src.utils import ROOTDIR, base_dataset, compute_return, update_dataset
 
-def run_backtest(contract_params: dict, annualized: bool = True):
+def run_backtest( contract_params: dict, annualized: bool = True):
     """
     Run backtest for a given contract. The backtest is run on a historical dataset.
     Return the a dataframe with IRR for each trade date,
@@ -37,6 +37,9 @@ def run_backtest(contract_params: dict, annualized: bool = True):
 
         update_dataset(pricing_ts, dataset, spot, contract_params)
 
+        # Convert pricing_ts to datetime.datetime object
+        pricing_ts = datetime.combine(pricing_ts, datetime.min.time())
+        
         timetable = create_timetable(
             pricing_ts, monthend_dates, spot, i, contract_params
         ).timetable()
