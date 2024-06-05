@@ -1,15 +1,10 @@
-"""
-Method to run backtest for a given contract.
-"""
 from datetime import datetime
-
 import pandas as pd
 from qablet.black_scholes.mc import LVMCModel
 
 from src.model import CFModelPyCSV, DataModel, get_cf
 from src.timetables import create_timetable
 from src.utils import ROOTDIR, base_dataset, compute_return, update_dataset
-
 
 def run_backtest(contract_params: dict, annualized: bool = True):
     """
@@ -29,14 +24,14 @@ def run_backtest(contract_params: dict, annualized: bool = True):
     results = []
     all_stats = []
     all_ts = []
-    
+
     # Fetch adjusted month-end dates using the monthend_dates method
     monthend_dates = csvdata.monthend_dates(contract_params["ticker"])
 
     m_exp = 12
     num_trials = len(monthend_dates) - m_exp
     for i in range(num_trials):
-        pricing_ts = monthend_dates[i]  # timestamp of trading date
+        pricing_ts = monthend_dates[i]  # datetime object of trading date
 
         spot = csvdata.get_value(contract_params["ticker"], pricing_ts)
 
@@ -60,7 +55,7 @@ def run_backtest(contract_params: dict, annualized: bool = True):
         )
         end_dt = timetable["events"]["time"][-1].as_py().timestamp()
 
-        all_ts.append((pricing_ts.value, end_dt))
+        all_ts.append((pricing_ts.timestamp(), end_dt))
 
     df = pd.DataFrame(
         results,

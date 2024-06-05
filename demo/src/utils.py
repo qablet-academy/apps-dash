@@ -2,7 +2,7 @@
 This module contains utility functions for the demo.
 """
 import os
-
+from datetime import datetime
 import numpy as np
 from scipy.optimize import minimize_scalar
 
@@ -65,8 +65,11 @@ def update_dataset(pricing_ts, dataset, spot, params):
     fwds = spot * np.exp((rates - divs) * times)
     assets_data[ticker] = ("FORWARDS", np.column_stack((times, fwds)))
 
-    # update dataset
-    dataset["PRICING_TS"] = int(pricing_ts.value / 1e6)  # ns to ms timestamp
+    # Convert pricing_ts to datetime.datetime object
+    pricing_ts_dt = datetime.combine(pricing_ts, datetime.min.time())
+
+    # Update dataset
+    dataset["PRICING_TS"] = int(pricing_ts_dt.timestamp() * 1e3)  # Convert to milliseconds
     dataset["ASSETS"] = assets_data
     dataset["LV"] = {
         "ASSET": ticker,
