@@ -1,7 +1,7 @@
 import polars as pl
-from datetime import datetime, timedelta
+from datetime import datetime,date,timedelta
 from qablet.base.cf import CFModelPyBase
-
+import numpy as np
 MS_IN_DAY = 1000 * 3600 * 24
 TS_TO_YEARS = 1 / (365 * 24 * 3600 * 1e9)
 
@@ -67,28 +67,31 @@ class DataModel:
             pl.col("date") <= end
         )
     
-    def monthend_dates(self, ticker):
-        """Return month-end dates for a given range."""
-        start_date = datetime(2019, 12, 31)
-        end_date = datetime(2024, 4, 30)
-
-        # Generate month-end dates using Polars
-        monthend_dates = pl.datetime_range(start_date, end_date, "1mo", eager=True)
-
-
-
-        # Adjust the dates to the nearest trading date for that ticker (on or before)
-        adjusted_dates = []
-        for date in monthend_dates:
-            # Pass the ticker value to filter the dataframe
-            ticker_data = self.data.filter(pl.col(ticker) == 1)
-            valid_dates = ticker_data.drop_nulls()["date"]
-            if len(valid_dates) == 0:
-                adjusted_dates.append(None)  # Handle empty list case
-            else:
-                idx = valid_dates.search_sorted(date, side="right") - 1
-                adjusted_dates.append(valid_dates[idx] if idx >= 0 else None)
-
-        return adjusted_dates
     
+
+    def monthend_dates(self, ticker):
+     """Return month-end dates for a given range."""
+     start_date = datetime(2019, 12, 31)
+     end_date = datetime(2024, 4, 30)
+
+     # Generate month-end dates using Polars
+     monthend_dates = pl.date_range(start_date, end_date, "1mo", eager=True)
+
+     # Adjust the dates to the nearest trading date for that ticker (on or before)
+     adjusted_dates = []
+     for date in monthend_dates:
+         # Pass the ticker value to filter the dataframe
+         ticker_data = self.data.select(["date", ticker]).drop_nulls()
+         valid_dates = ticker_data["date"]
+
+         if len(valid_dates) == 0:
+             adjusted_dates.append(None)  # Handle empty list case
+         else:
+             idx = valid_dates.search_sorted(date, side="right") - 1
+             if idx >= 0:
+                 adjusted_dates.append(valid_dates[idx])
+             else:
+                 adjusted_dates.append(None)
+
+     return adjusted_dates
 
