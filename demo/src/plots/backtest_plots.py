@@ -26,11 +26,13 @@ def blank_figure():
     return fig
 
 
-def plot_cashflow(ts_data, cf, ticker):
-    prc_ts, end_ts = ts_data
+def plot_cashflow(dates, cf, ticker):
+    prc_ts, end_ts = dates
+    prc_dt = datetime.fromtimestamp(prc_ts // 1000, pytz.utc)
+    end_dt = datetime.fromtimestamp(end_ts // 1000, pytz.utc)
     trade_price = cf[2]
-    x = np.insert(cf[0], 0, prc_ts // 1000000)
-    x = np.array(x).astype("datetime64[ms]")
+    x = np.array(cf[0]).astype("datetime64[ms]")
+    x = np.insert(x, 0, prc_dt)
     y = np.array(cf[1])
     y = np.insert(y, 0, -trade_price)
 
@@ -57,8 +59,6 @@ def plot_cashflow(ts_data, cf, ticker):
 
     # Annotate the trade and the last cashflow date
     datefmt = "%Y-%m-%d"
-    prc_dt = datetime.fromtimestamp(prc_ts // 1000000000, pytz.utc)
-    end_dt = datetime.fromtimestamp(end_ts, pytz.utc)
     fig.add_annotation(
         x=prc_dt,
         text=f"Trade Date<br><b>{prc_dt.strftime(datefmt)}</b>",
