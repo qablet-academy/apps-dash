@@ -20,7 +20,7 @@ def tt_description(contract_params: dict, trial=0):
     spot = csvdata.get_value(contract_params["ticker"], pricing_datetime)
 
     contract = create_timetable(
-        pricing_datetime, monthend_datetimes, spot, trial, contract_params
+        monthend_datetimes, spot, trial, contract_params
     )
 
     # Get Definition Text from Contract docstring

@@ -34,17 +34,14 @@ def run_backtest(contract_params: dict, annualized: bool = True):
     m_exp = 12
     num_trials = len(monthend_datetimes) - m_exp
     for i in range(num_trials):
-        pricing_datetime = monthend_datetimes[
-            i
-        ]  # datetime object of trading date
+        pricing_datetime = monthend_datetimes[i]
         pricing_ts = int(pricing_datetime.timestamp() * 1000)
 
         spot = csvdata.get_value(contract_params["ticker"], pricing_datetime)
-
         update_dataset(pricing_ts, dataset, spot, contract_params)
 
         timetable = create_timetable(
-            pricing_datetime, monthend_datetimes, spot, i, contract_params
+            monthend_datetimes, spot, i, contract_params
         ).timetable()
 
         # Compute prices of 0 and unit coupon

@@ -36,7 +36,7 @@ def model_cashflows(contract_params: dict, trial=0, vol=0.3):
 
     # create timetable for contract
     timetable = create_timetable(
-        pricing_datetime, monthend_datetimes, spot, trial, contract_params
+        monthend_datetimes, spot, trial, contract_params
     ).timetable()
 
     # create forward timetable
