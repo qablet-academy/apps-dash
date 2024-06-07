@@ -84,6 +84,9 @@ class DataModel:
          ticker_data = self.data.select(["date", ticker]).drop_nulls()
          valid_dates = ticker_data["date"]
 
+         # Convert valid_dates to datetime.datetime
+         #valid_dates = [datetime.combine(d, datetime.min.time())]
+
          if len(valid_dates) == 0:
              adjusted_dates.append(None)  # Handle empty list case
          else:
@@ -93,5 +96,9 @@ class DataModel:
              else:
                  adjusted_dates.append(None)
 
+     # Ensure adjusted_dates are in datetime.datetime format
+     #adjusted_dates = [datetime.combine(d, datetime.min.time()) if isinstance(d, datetime.date) and not isinstance(d, datetime.datetime) else d for d in adjusted_dates]
+    
+     
      return adjusted_dates
 
