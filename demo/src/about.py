@@ -1,9 +1,6 @@
 """
 Write about the contract in markdown.
 """
-from datetime import datetime
-
-import pandas as pd
 
 from src.model import DataModel
 from src.timetables import create_timetable
@@ -16,15 +13,14 @@ def tt_description(contract_params: dict, trial=0):
     csvdata = DataModel(filename)
 
     # get all month ends
-    monthend_dates = pd.bdate_range(
-        datetime(2020, 3, 31), datetime(2024, 4, 30), freq="1BME"
-    )
-    pricing_ts = monthend_dates[trial]  # timestamp of trading date
+    monthend_datetimes = csvdata.monthend_datetimes(contract_params["ticker"])
 
-    spot = csvdata.get_value(contract_params["ticker"], pricing_ts)
+    pricing_datetime = monthend_datetimes[trial]  # timestamp of trading date
+
+    spot = csvdata.get_value(contract_params["ticker"], pricing_datetime)
 
     contract = create_timetable(
-        pricing_ts, monthend_dates, spot, trial, contract_params
+        monthend_datetimes, spot, trial, contract_params
     )
 
     # Get Definition Text from Contract docstring

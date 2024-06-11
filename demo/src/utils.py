@@ -66,7 +66,7 @@ def update_dataset(pricing_ts, dataset, spot, params):
     assets_data[ticker] = ("FORWARDS", np.column_stack((times, fwds)))
 
     # update dataset
-    dataset["PRICING_TS"] = int(pricing_ts.value / 1e6)  # ns to ms timestamp
+    dataset["PRICING_TS"] = pricing_ts
     dataset["ASSETS"] = assets_data
     dataset["LV"] = {
         "ASSET": ticker,

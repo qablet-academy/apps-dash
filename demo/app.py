@@ -1,6 +1,5 @@
 import sys
 from os.path import dirname
-
 import dash
 import dash_bootstrap_components as dbc
 from dash import Input, Output, State, callback, dcc, html
@@ -42,7 +41,7 @@ report_nav = dbc.Nav(
 contract_editor = html.Div(
     [
         dcc.Dropdown(
-            ["SPX", "EUR", "BTC"],
+            ["SPX", "EUR", "BTC","FTSE"],
             "SPX",
             id="ctr-ticker",
         ),

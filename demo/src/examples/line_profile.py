@@ -1,9 +1,9 @@
 # Description: This file is used to profile the code using line_profiler
 
-from line_profiler import LineProfiler
 import sys
 from os.path import dirname
 
+from line_profiler import LineProfiler
 
 if __name__ == "__main__":
     sys.path.append(dirname(dirname(dirname(__file__))))

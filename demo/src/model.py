@@ -1,12 +1,10 @@
-"""
-A Cashflow Model using data from a CSV file parsed into a polars dataframe.
-"""
+from datetime import datetime
 
 import polars as pl
 from qablet.base.cf import CFModelPyBase
 
 MS_IN_DAY = 1000 * 3600 * 24
-TS_TO_YEARS = 1 / (365 * 24 * 3600 * 1e9)
+TS_TO_YEARS = 1 / (365 * MS_IN_DAY)
 
 
 class CFModelPyCSV(CFModelPyBase):
@@ -40,7 +38,7 @@ def get_cf(pricing_ts, timetable, stats):
     """Return cashflows and years for a given timetable and stats."""
 
     df = pl.from_arrow(stats)
-    # get the timestamp of the events, corrsponding to the index in the stats
+    # get the timestamp of the events, corresponding to the index in the stats
     ts_col = pl.from_arrow(timetable["events"]["time"])[df["index"]]
     df = df.with_columns(ts=ts_col)
     # net cashflows by timestamp
@@ -48,7 +46,7 @@ def get_cf(pricing_ts, timetable, stats):
 
     cf_vec = df["value"].to_numpy()
     ts_vec = df["ts"].to_numpy()
-    yrs_vec = (ts_vec - pricing_ts.to_numpy()).astype(float) * TS_TO_YEARS
+    yrs_vec = (ts_vec - pricing_ts).astype(float) * TS_TO_YEARS
     return yrs_vec, cf_vec, ts_vec
 
 
@@ -60,6 +58,8 @@ class DataModel:
         self.data = pl.read_csv(
             filename, try_parse_dates=True, infer_schema_length=None
         ).set_sorted("date")
+        self.start_date = datetime(2019, 12, 31)
+        self.end_date = datetime(2024, 4, 30)
 
     def get_value(self, unit, dt):
         """Return value for given unit, on given datetime."""
@@ -72,3 +72,30 @@ class DataModel:
         return self.data.filter(pl.col("date") >= start).filter(
             pl.col("date") <= end
         )
+
+    def monthend_datetimes(self, ticker):
+        """Return month-end datetimes for a given ticker."""
+
+        # First generate month-end dates using Polars
+        monthend_datetimes = pl.date_range(
+            self.start_date, self.end_date, "1mo", eager=True, time_zone="UTC"
+        )
+
+        # Find valid dates for the ticker
+        valid_ticker_data = self.data.select(["date", ticker]).drop_nulls()
+        valid_datetimes = (
+            valid_ticker_data["date"]
+            .cast(datetime)
+            .dt.convert_time_zone("UTC")
+        )
+
+        # Adjust the dates to the nearest trading date for that ticker (on or before)
+        adjusted_datetimes = []
+        for dt in monthend_datetimes:
+            idx = valid_datetimes.search_sorted(dt, side="right") - 1
+            if idx >= 0:
+                adjusted_datetimes.append(valid_datetimes[idx])
+            else:
+                raise ValueError(f"No valid date found for {dt}")
+
+        return adjusted_datetimes

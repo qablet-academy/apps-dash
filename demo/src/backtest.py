@@ -1,8 +1,6 @@
 """
 Method to run backtest for a given contract.
 """
-from datetime import datetime
-
 import pandas as pd
 from qablet.black_scholes.mc import LVMCModel
 
@@ -29,20 +27,21 @@ def run_backtest(contract_params: dict, annualized: bool = True):
     results = []
     all_stats = []
     all_ts = []
-    monthend_dates = pd.bdate_range(
-        datetime(2019, 12, 31), datetime(2024, 4, 30), freq="1BME"
-    )
+
+    # Fetch adjusted month-end dates using the monthend_datetimes method
+    monthend_datetimes = csvdata.monthend_datetimes(contract_params["ticker"])
+
     m_exp = 12
-    num_trials = len(monthend_dates) - m_exp
+    num_trials = len(monthend_datetimes) - m_exp
     for i in range(num_trials):
-        pricing_ts = monthend_dates[i]  # timestamp of trading date
+        pricing_datetime = monthend_datetimes[i]
+        pricing_ts = int(pricing_datetime.timestamp() * 1000)
 
-        spot = csvdata.get_value(contract_params["ticker"], pricing_ts)
-
+        spot = csvdata.get_value(contract_params["ticker"], pricing_datetime)
         update_dataset(pricing_ts, dataset, spot, contract_params)
 
         timetable = create_timetable(
-            pricing_ts, monthend_dates, spot, i, contract_params
+            monthend_datetimes, spot, i, contract_params
         ).timetable()
 
         # Compute prices of 0 and unit coupon
@@ -53,13 +52,15 @@ def run_backtest(contract_params: dict, annualized: bool = True):
         yrs_vec, cf_vec, ts_vec = get_cf(pricing_ts, timetable, stats)
         irr = compute_return(cf_vec, yrs_vec, px, annualized=annualized)
 
-        results.append((pricing_ts, irr))
+        results.append((pricing_datetime, irr))
         all_stats.append(
             (ts_vec.astype("uint64").tolist(), cf_vec.tolist(), px)
         )
-        end_dt = timetable["events"]["time"][-1].as_py().timestamp()
 
-        all_ts.append((pricing_ts.value, end_dt))
+        end_ts = int(
+            timetable["events"]["time"][-1].as_py().timestamp() * 1000
+        )
+        all_ts.append((pricing_ts, end_ts))
 
     df = pd.DataFrame(
         results,
