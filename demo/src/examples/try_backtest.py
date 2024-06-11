@@ -17,7 +17,7 @@ def main():
     )
 
     contract_params = {
-        "ticker": "SPX",
+        "ticker": "EUR",
         "ctr-type": "Reverse Convertible",
     }
     df, stats = run_backtest(contract_params, annualized=False)
