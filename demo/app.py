@@ -41,7 +41,7 @@ report_nav = dbc.Nav(
 contract_editor = html.Div(
     [
         dcc.Dropdown(
-            ["SPX", "EUR", "BTC","FTSE"],
+            ["SPX", "EUR", "BTC", "FTSE"],
             "SPX",
             id="ctr-ticker",
         ),
@@ -50,6 +50,17 @@ contract_editor = html.Div(
             CONTRACT_TYPES,
             CONTRACT_TYPES[0],
             id="ctr-type",
+        ),
+        html.Br(),
+        dcc.RadioItems(
+            options=[
+                {'label': 'Call', 'value': 'Call'},
+                {'label': 'Put', 'value': 'Put'}
+            ],
+            value='Call',
+            id='ctr-option-type',
+            inline=True,
+            labelStyle={'margin-right': '20px'}  # Add spacing between radio buttons
         ),
         dcc.Store(id="ctr-params", storage_type="session"),
         html.Br(),
@@ -108,11 +119,13 @@ app.layout = dbc.Container(
     Output("ctr-params", "data"),
     Input("ctr-ticker", "value"),
     Input("ctr-type", "value"),
+    Input("ctr-option-type", "value"),
 )
-def update_graph(ticker, contract_type):
+def update_graph(ticker, contract_type, option_type):
     contract_params = {
         "ticker": ticker,
         "ctr-type": contract_type,
+        "option_type": option_type
     }
     return contract_params
 

@@ -106,7 +106,7 @@ def create_barrier_timetable(monthend_datetimes, spot, trial, params):
         asset_name=ticker,
         strike=spot,
         maturity=barrier_dts[-1],
-        is_call=True,
+        is_call=params["option_type"] == "Call",
         barrier=spot * 1.2,
         barrier_type="Up/Out",
         barrier_dates=barrier_dts,
@@ -127,7 +127,7 @@ def create_vanilla_timetable(monthend_datetimes, spot, trial, params):
         asset_name=ticker,
         strike=spot,
         maturity=barrier_dts[-1],  # simplify later
-        is_call=True,
+        is_call=params["option_type"] == "Call",
     )
 
 
