@@ -60,7 +60,16 @@ contract_editor = html.Div(
             value='Call',
             id='ctr-option-type',
             inline=True,
-            labelStyle={'margin-right': '20px'}  # Add spacing between radio buttons
+            labelStyle={'margin-center': '20px'}  # Add spacing between radio buttons
+        ),
+        html.Br(),
+        dcc.Slider(
+            id='ctr-strike',
+            min=80,
+            max=120,
+            step=1,
+            value=100,
+            marks={i: f'{i}%' for i in range(80, 121, 5)},
         ),
         dcc.Store(id="ctr-params", storage_type="session"),
         html.Br(),
@@ -120,12 +129,14 @@ app.layout = dbc.Container(
     Input("ctr-ticker", "value"),
     Input("ctr-type", "value"),
     Input("ctr-option-type", "value"),
+    Input("ctr-strike", "value"),
 )
-def update_graph(ticker, contract_type, option_type):
+def update_graph(ticker, contract_type, option_type, strike):
     contract_params = {
         "ticker": ticker,
         "ctr-type": contract_type,
-        "option_type": option_type
+        "option_type": option_type,
+        "strike": strike
     }
     return contract_params
 

@@ -1,6 +1,3 @@
-"""
-Create timetables for different contracts, using the contract parameters dict.
-"""
 import polars as pl
 import pyarrow as pa
 from qablet_contracts.eq.autocall import DiscountCert, ReverseCB
@@ -50,6 +47,7 @@ def create_timetable(monthend_datetimes, spot, trial, params):
 def create_autocallable_timetable(monthend_datetimes, spot, trial, params):
     """Create the timetable for the discount certificate."""
     ticker = params["ticker"]
+    strike = params.get("strike", 80)
 
     m_per = 3
     m_exp = 12
@@ -61,7 +59,7 @@ def create_autocallable_timetable(monthend_datetimes, spot, trial, params):
         ccy="USD",
         asset_name=ticker,
         initial_spot=spot,
-        strike=80,  # percent
+        strike=strike,  # percent
         accrual_start=accrual_start,
         maturity=barrier_dts[-1],
         barrier=100,
@@ -73,6 +71,7 @@ def create_autocallable_timetable(monthend_datetimes, spot, trial, params):
 def create_reverse_cb_timetable(monthend_datetimes, spot, trial, params):
     """Create the timetable for the reverse cb."""
     ticker = params["ticker"]
+    strike = params.get("strike", 80)
 
     m_per = 3
     m_exp = 12
@@ -84,7 +83,7 @@ def create_reverse_cb_timetable(monthend_datetimes, spot, trial, params):
         ccy="USD",
         asset_name=ticker,
         initial_spot=spot,
-        strike=80,  # percent
+        strike=strike,  # percent
         accrual_start=accrual_start,
         maturity=barrier_dts[-1],
         barrier=100,
@@ -96,6 +95,7 @@ def create_reverse_cb_timetable(monthend_datetimes, spot, trial, params):
 def create_barrier_timetable(monthend_datetimes, spot, trial, params):
     """Create the timetable for the barrier option."""
     ticker = params["ticker"]
+    strike = params.get("strike", spot)
 
     m_per = 1
     m_exp = 12
@@ -104,7 +104,7 @@ def create_barrier_timetable(monthend_datetimes, spot, trial, params):
     return OptionKO(
         ccy="USD",
         asset_name=ticker,
-        strike=spot,
+        strike=strike,
         maturity=barrier_dts[-1],
         is_call=params["option_type"] == "Call",
         barrier=spot * 1.2,
@@ -117,6 +117,7 @@ def create_barrier_timetable(monthend_datetimes, spot, trial, params):
 def create_vanilla_timetable(monthend_datetimes, spot, trial, params):
     """Create the timetable for the vanilla option."""
     ticker = params["ticker"]
+    strike = params.get("strike", spot)
 
     m_per = 3
     m_exp = 12
@@ -125,7 +126,7 @@ def create_vanilla_timetable(monthend_datetimes, spot, trial, params):
     return Option(
         ccy="USD",
         asset_name=ticker,
-        strike=spot,
+        strike=strike,
         maturity=barrier_dts[-1],  # simplify later
         is_call=params["option_type"] == "Call",
     )
