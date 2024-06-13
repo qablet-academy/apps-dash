@@ -51,35 +51,60 @@ contract_editor = html.Div(
             id="ctr-type",
         ),
         html.Br(),
-        dcc.RadioItems(
-            options=[
-                {'label': 'Call', 'value': 'Call'},
-                {'label': 'Put', 'value': 'Put'}
+        html.Div(
+            [
+                html.Label("Option Type", style={'margin-right': '10px', 'min-width': '100px'}),  # Header for Option Type
+                dcc.RadioItems(
+                    options=[
+                        {'label': 'Call', 'value': 'Call'},
+                        {'label': 'Put', 'value': 'Put'}
+                    ],
+                    value='Call',
+                    id='ctr-option-type',
+                    inline=True,
+                    labelStyle={'margin-right': '20px', 'display': 'inline-block'}  # Add spacing between radio buttons
+                ),
             ],
-            value='Call',
-            id='ctr-option-type',
-            inline=True,
-            labelStyle={'margin-right': '20px'}  # Add spacing between radio buttons
+            style={'display': 'flex', 'align-items': 'center'}
         ),
         html.Br(),
-        dcc.Slider(
-            id='ctr-strike',
-            min=80,
-            max=120,
-            step=1,
-            marks={i: f'{i}%' for i in range(80, 121, 5)},
-            value=100,
-            tooltip={"placement": "bottom", "always_visible": True},
+        html.Div(
+            [
+                html.Label("Strike", style={'margin-right': '10px', 'min-width': '50px'}),
+                html.Div(
+                    dcc.Slider(
+                        id='ctr-strike',
+                        min=80,
+                        max=120,
+                        step=1,
+                        value=100,
+                        marks={i: f'{i}%' for i in range(80, 121, 10)},
+                        tooltip={"placement": "bottom", "always_visible": True}
+                    ),
+                    style={'flex': '1'}
+                ),
+            ],
+            style={'display': 'flex', 'align-items': 'center', 'width': '100%'}
         ),
         html.Br(),
-        dcc.RangeSlider(
-            id='ctr-cap-floor',
-            min=-10,
-            max=10,
-            step=0.5,
-            marks={i: f'{i}%' for i in range(-10, 11, 5)},
-            value=[-5, 5],
-            tooltip={"placement": "bottom", "always_visible": True},
+        html.Div(
+            [
+                html.Label("Floor", style={'margin-right': '10px', 'min-width': '60px'}),
+                html.Div(
+                    dcc.RangeSlider(
+                        id='ctr-cap-floor',
+                        min=-10,
+                        max=10,
+                        step=0.1,
+                        value=[-5, 5],
+                        marks={i: f'{i}%' for i in range(-10, 11, 5)},
+                        tooltip={"placement": "bottom", "always_visible": True}
+                    ),
+                    style={'flex': '1'}
+                ),
+                html.Label("Cap", style={'margin-left': '10px', 'min-width': '60px'})
+            ],
+            style={'display': 'flex', 'align-items': 'center', 'width': '100%'}
         ),
         dcc.Store(id="ctr-params", storage_type="session"),
         html.Br(),
@@ -148,7 +173,7 @@ def update_graph(ticker, contract_type, option_type, strike, cap_floor):
         "ctr-type": contract_type,
         "option_type": option_type,
         "strike": strike,
-        "cap_floor": cap_floor
+        "cap_floor": cap_floor[::-1],  # Reverse the order to get [cap, floor]
     }
     return contract_params
 
