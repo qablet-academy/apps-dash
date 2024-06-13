@@ -67,9 +67,9 @@ contract_editor = html.Div(
             min=80,
             max=120,
             step=1,
+            marks={i: f'{i}%' for i in range(80, 121, 5)},
             value=100,
-            marks={i: f'{i}%' for i in range(80, 121, 10)},
-            tooltip={"placement": "bottom", "always_visible": True}
+            tooltip={"placement": "bottom", "always_visible": True},
         ),
         html.Br(),
         dcc.RangeSlider(
@@ -77,9 +77,9 @@ contract_editor = html.Div(
             min=-10,
             max=10,
             step=0.5,
-            value=[-5, 5],
             marks={i: f'{i}%' for i in range(-10, 11, 5)},
-            tooltip={"placement": "bottom", "always_visible": True}
+            value=[-5, 5],
+            tooltip={"placement": "bottom", "always_visible": True},
         ),
         dcc.Store(id="ctr-params", storage_type="session"),
         html.Br(),
@@ -140,7 +140,7 @@ app.layout = dbc.Container(
     Input("ctr-type", "value"),
     Input("ctr-option-type", "value"),
     Input("ctr-strike", "value"),
-    Input("ctr-cap-floor", "value")
+    Input("ctr-cap-floor", "value"),
 )
 def update_graph(ticker, contract_type, option_type, strike, cap_floor):
     contract_params = {
