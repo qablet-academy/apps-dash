@@ -1,3 +1,6 @@
+"""
+Create timetables for different contracts, using the contract parameters dict.
+"""
 import polars as pl
 import pyarrow as pa
 from qablet_contracts.eq.autocall import DiscountCert, ReverseCB
@@ -104,7 +107,8 @@ def create_barrier_timetable(monthend_datetimes, spot, trial, params):
     return OptionKO(
         ccy="USD",
         asset_name=ticker,
-        strike=strike,
+        #strike=strike,
+        strike = params.get("strike", 100) * spot / 100,
         maturity=barrier_dts[-1],
         is_call=params["option_type"] == "Call",
         barrier=spot * 1.2,
@@ -126,7 +130,8 @@ def create_vanilla_timetable(monthend_datetimes, spot, trial, params):
     return Option(
         ccy="USD",
         asset_name=ticker,
-        strike=strike,
+        strike = params.get("strike", 100) * spot / 100,
+        #strike=strike,
         maturity=barrier_dts[-1],  # simplify later
         is_call=params["option_type"] == "Call",
     )
@@ -139,14 +144,14 @@ def create_cliquet_timetable(monthend_datetimes, spot, trial, params):
     m_per = 1
     m_exp = 12
     fix_dates = monthend_datetimes[trial + m_per : trial + m_exp + 1 : m_per]
-
+    local_cap, local_floor = params.get("cap_floor", [0.05, -0.05])
     return Accumulator(
         ccy="USD",
         asset_name=ticker,
         fix_dates=fix_dates,
         global_floor=0.0,
-        local_cap=0.05,
-        local_floor=-0.05,
+        local_cap=local_cap,
+        local_floor=local_floor,
     )
 
 

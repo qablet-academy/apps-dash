@@ -13,7 +13,6 @@ app = dash.Dash(
 )
 server = app.server
 
-
 SIDEBAR_STYLE = {
     "position": "fixed",
     "top": 0,
@@ -60,7 +59,7 @@ contract_editor = html.Div(
             value='Call',
             id='ctr-option-type',
             inline=True,
-            labelStyle={'margin-center': '20px'}  # Add spacing between radio buttons
+            labelStyle={'margin-right': '20px'}  # Add spacing between radio buttons
         ),
         html.Br(),
         dcc.Slider(
@@ -69,7 +68,18 @@ contract_editor = html.Div(
             max=120,
             step=1,
             value=100,
-            marks={i: f'{i}%' for i in range(80, 121, 5)},
+            marks={i: f'{i}%' for i in range(80, 121, 10)},
+            tooltip={"placement": "bottom", "always_visible": True}
+        ),
+        html.Br(),
+        dcc.RangeSlider(
+            id='ctr-cap-floor',
+            min=-10,
+            max=10,
+            step=0.5,
+            value=[-5, 5],
+            marks={i: f'{i}%' for i in range(-10, 11, 5)},
+            tooltip={"placement": "bottom", "always_visible": True}
         ),
         dcc.Store(id="ctr-params", storage_type="session"),
         html.Br(),
@@ -130,13 +140,15 @@ app.layout = dbc.Container(
     Input("ctr-type", "value"),
     Input("ctr-option-type", "value"),
     Input("ctr-strike", "value"),
+    Input("ctr-cap-floor", "value")
 )
-def update_graph(ticker, contract_type, option_type, strike):
+def update_graph(ticker, contract_type, option_type, strike, cap_floor):
     contract_params = {
         "ticker": ticker,
         "ctr-type": contract_type,
         "option_type": option_type,
-        "strike": strike
+        "strike": strike,
+        "cap_floor": cap_floor
     }
     return contract_params
 
