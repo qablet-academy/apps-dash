@@ -51,61 +51,56 @@ contract_editor = html.Div(
             id="ctr-type",
         ),
         html.Br(),
-        html.Div(
-            [
-                html.Label("Option Type", style={'margin-right': '10px', 'min-width': '100px'}),  # Header for Option Type
-                dcc.RadioItems(
-                    options=[
-                        {'label': 'Call', 'value': 'Call'},
-                        {'label': 'Put', 'value': 'Put'}
-                    ],
-                    value='Call',
-                    id='ctr-option-type',
-                    inline=True,
-                    labelStyle={'margin-right': '20px', 'display': 'inline-block'}  # Add spacing between radio buttons
-                ),
-            ],
-            style={'display': 'flex', 'align-items': 'center'}
-        ),
+        
+        html.Div(id='option-type-container', children=[
+            html.Label("Option Type", style={'margin-right': '10px', 'min-width': '100px'}),
+            dcc.RadioItems(
+                options=[
+                    {'label': 'Call', 'value': 'Call'},
+                    {'label': 'Put', 'value': 'Put'}
+                ],
+                value='Call',
+                id='ctr-option-type',
+                inline=True,
+                labelStyle={'margin-right': '20px', 'display': 'inline-block'}  # Add spacing between radio buttons
+            ),
+        ], style={'display': 'none', 'align-items': 'center'}),
         html.Br(),
-        html.Div(
-            [
-                html.Label("Strike", style={'margin-right': '10px', 'min-width': '50px'}),
-                html.Div(
-                    dcc.Slider(
-                        id='ctr-strike',
-                        min=80,
-                        max=120,
-                        step=1,
-                        value=100,
-                        marks={i: f'{i}%' for i in range(80, 121, 10)},
-                        tooltip={"placement": "bottom", "always_visible": True}
-                    ),
-                    style={'flex': '1'}
+        
+        html.Div(id='strike-container', children=[
+            html.Label("Strike", style={'margin-right': '10px', 'min-width': '50px'}),
+            html.Div(
+                dcc.Slider(
+                    id='ctr-strike',
+                    min=80,
+                    max=120,
+                    step=1,
+                    value=100,
+                    marks={i: f'{i}%' for i in range(80, 121, 10)},
+                    tooltip={"placement": "bottom", "always_visible": True}
                 ),
-            ],
-            style={'display': 'flex', 'align-items': 'center', 'width': '100%'}
-        ),
+                style={'flex': '1', 'min-width': '300px'}  # Ensure the slider has a minimum width
+            ),
+        ], style={'display': 'none', 'align-items': 'center', 'width': '100%'}),
         html.Br(),
-        html.Div(
-            [
-                html.Label("Floor", style={'margin-right': '10px', 'min-width': '60px'}),
-                html.Div(
-                    dcc.RangeSlider(
-                        id='ctr-cap-floor',
-                        min=-10,
-                        max=10,
-                        step=0.1,
-                        value=[-5, 5],
-                        marks={i: f'{i}%' for i in range(-10, 11, 5)},
-                        tooltip={"placement": "bottom", "always_visible": True}
-                    ),
-                    style={'flex': '1'}
+        
+        html.Div(id='cap-floor-container', children=[
+            html.Label("Floor", style={'margin-right': '10px', 'min-width': '60px'}),
+            html.Div(
+                dcc.RangeSlider(
+                    id='ctr-cap-floor',
+                    min=-10,
+                    max=10,
+                    step=0.1,
+                    value=[-5, 5],
+                    marks={i: f'{i}%' for i in range(-10, 11, 5)},
+                    tooltip={"placement": "bottom", "always_visible": True}
                 ),
-                html.Label("Cap", style={'margin-left': '10px', 'min-width': '60px'})
-            ],
-            style={'display': 'flex', 'align-items': 'center', 'width': '100%'}
-        ),
+                style={'flex': '1', 'min-width': '240px'}  # Ensure the range slider has a minimum width
+            ),
+            html.Label("Cap", style={'margin-left': '10px', 'min-width': '60px'})
+        ], style={'display': 'none', 'align-items': 'center', 'width': '100%'}),
+        
         dcc.Store(id="ctr-params", storage_type="session"),
         html.Br(),
         dbc.Button(
@@ -161,6 +156,9 @@ app.layout = dbc.Container(
 # Collect parameters from the contract editor and store them in a dict.
 @callback(
     Output("ctr-params", "data"),
+    Output("option-type-container", "style"),
+    Output("strike-container", "style"),
+    Output("cap-floor-container", "style"),
     Input("ctr-ticker", "value"),
     Input("ctr-type", "value"),
     Input("ctr-option-type", "value"),
@@ -168,14 +166,27 @@ app.layout = dbc.Container(
     Input("ctr-cap-floor", "value"),
 )
 def update_graph(ticker, contract_type, option_type, strike, cap_floor):
+    # Set the styles for each input container based on the contract type
+    option_type_style = {'display': 'none'}
+    strike_style = {'display': 'none'}
+    cap_floor_style = {'display': 'none'}
+    
+    if contract_type in ["Vanilla Option", "Knockout Option"]:
+        option_type_style = {'display': 'flex', 'align-items': 'center'}
+        strike_style = {'display': 'flex', 'align-items': 'center', 'width': '100%', 'min-width': '300px'}
+    elif contract_type in ["Discount Certificate", "Reverse Convertible"]:
+        strike_style = {'display': 'flex', 'align-items': 'center', 'width': '100%', 'min-width': '300px'}
+    elif contract_type == "Cliquet":
+        cap_floor_style = {'display': 'flex', 'align-items': 'center', 'width': '100%', 'min-width': '300px'}
+    
     contract_params = {
         "ticker": ticker,
         "ctr-type": contract_type,
         "option_type": option_type,
         "strike": strike,
-        "cap_floor": cap_floor[::-1],  # Reverse the order to get [cap, floor]
+        "cap_floor": cap_floor, 
     }
-    return contract_params
+    return contract_params, option_type_style, strike_style, cap_floor_style
 
 
 # Toggle the offcanvas to show the contract description.
