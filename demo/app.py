@@ -46,7 +46,7 @@ STRIKE_STYLE = {
     "width": "100%",
     "min-width": "300px",
 }
-CAP_FLOOR_STYLE = {
+FLOOR_CAP_STYLE = {
     "display": "flex",
     "align-items": "center",
     "width": "100%",
@@ -123,7 +123,7 @@ contract_editor = html.Div(
         ),
         html.Br(),
         html.Div(
-            id="cap-floor-container",
+            id="floor-cap-container",
             children=[
                 html.Label(
                     "Floor",
@@ -131,7 +131,7 @@ contract_editor = html.Div(
                 ),
                 html.Div(
                     dcc.RangeSlider(
-                        id="ctr-cap-floor",
+                        id="ctr-floor-cap",
                         min=-10,
                         max=10,
                         step=0.1,
@@ -214,7 +214,7 @@ def update_editor(contract_type):
     """Update visibility of contract parameters based on contract type."""
     option_type_style = NONE_STYLE
     strike_style = NONE_STYLE
-    cap_floor_style = NONE_STYLE
+    floor_cap_style = NONE_STYLE
 
     if contract_type in ["Vanilla Option", "Knockout Option"]:
         option_type_style = OPTION_TYPE_STYLE
@@ -222,11 +222,11 @@ def update_editor(contract_type):
     elif contract_type in ["Discount Certificate", "Reverse Convertible"]:
         strike_style = STRIKE_STYLE
     elif contract_type == "Cliquet":
-        cap_floor_style = CAP_FLOOR_STYLE
+        floor_cap_style = FLOOR_CAP_STYLE
 
     set_props("option-type-container", {"style": option_type_style})
     set_props("strike-container", {"style": strike_style})
-    set_props("cap-floor-container", {"style": cap_floor_style})
+    set_props("floor-cap-container", {"style": floor_cap_style})
 
 
 @callback(
@@ -235,9 +235,9 @@ def update_editor(contract_type):
     Input("ctr-type", "value"),
     Input("ctr-option-type", "value"),
     Input("ctr-strike", "value"),
-    Input("ctr-cap-floor", "value"),
+    Input("ctr-floor-cap", "value"),
 )
-def update_graph(ticker, contract_type, option_type, strike, cap_floor):
+def update_graph(ticker, contract_type, option_type, strike, floor_cap):
     """Collect parameters from the contract editor and store them in a dict."""
 
     contract_params = {
@@ -245,7 +245,7 @@ def update_graph(ticker, contract_type, option_type, strike, cap_floor):
         "ctr-type": contract_type,
         "option_type": option_type,
         "strike": strike,
-        "cap_floor": cap_floor,
+        "floor_cap": floor_cap,
     }
 
     return contract_params

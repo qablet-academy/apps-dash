@@ -141,18 +141,15 @@ def create_cliquet_timetable(monthend_datetimes, spot, trial, params):
     m_exp = 12
     fix_dates = monthend_datetimes[trial + m_per : trial + m_exp + 1 : m_per]
 
-    # Reverse cap_floor values and divide by 100
-    local_cap, local_floor = [
-        val / 100 for val in reversed(params.get("cap_floor", [0.05, -0.05]))
-    ]
+    floor, cap = params.get("floor_cap", [-5, 5])
 
     return Accumulator(
         ccy="USD",
         asset_name=ticker,
         fix_dates=fix_dates,
         global_floor=0.0,
-        local_cap=local_cap,
-        local_floor=local_floor,
+        local_cap=cap / 100,
+        local_floor=floor / 100,
     )
 
 
