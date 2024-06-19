@@ -121,8 +121,7 @@ def create_barrier_timetable(monthend_datetimes, spot, trial, params):
 def create_vanilla_timetable(monthend_datetimes, spot, trial, params):
     """Create the timetable for the vanilla option."""
     ticker = params["ticker"]
-    strike = params.get("strike", spot)
-
+    
     m_per = 3
     m_exp = 12
     barrier_dts = monthend_datetimes[trial + m_per : trial + m_exp + 1 : m_per]
@@ -131,7 +130,6 @@ def create_vanilla_timetable(monthend_datetimes, spot, trial, params):
         ccy="USD",
         asset_name=ticker,
         strike = params.get("strike", 100) * spot / 100,
-        #strike=strike,
         maturity=barrier_dts[-1],  # simplify later
         is_call=params["option_type"] == "Call",
     )

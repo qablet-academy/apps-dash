@@ -2,7 +2,7 @@ import sys
 from os.path import dirname
 import dash
 import dash_bootstrap_components as dbc
-from dash import Input, Output, State, callback, dcc, html
+from dash import Input, Output, State, callback, dcc, html, set_props
 from src.about import tt_description
 from src.timetables import CONTRACT_TYPES
 
@@ -20,6 +20,7 @@ SIDEBAR_STYLE = {
     "bottom": 0,
     "width": "24%",
     "padding": "1rem 1rem",
+    "overflow-y": "auto",
 }
 
 # Nav to select the page
@@ -35,6 +36,12 @@ report_nav = dbc.Nav(
     vertical=False,
     pills=True,
 )
+
+# Constants for styles
+NONE_STYLE = {'display': 'none'}
+OPTION_TYPE_STYLE = {'display': 'flex', 'align-items': 'center'}
+STRIKE_STYLE = {'display': 'flex', 'align-items': 'center', 'width': '100%', 'min-width': '300px'}
+CAP_FLOOR_STYLE = {'display': 'flex', 'align-items': 'center', 'width': '100%', 'min-width': '300px'}
 
 # Contract editor
 contract_editor = html.Div(
@@ -64,7 +71,7 @@ contract_editor = html.Div(
                 inline=True,
                 labelStyle={'margin-right': '20px', 'display': 'inline-block'}  # Add spacing between radio buttons
             ),
-        ], style={'display': 'none', 'align-items': 'center'}),
+        ], style=NONE_STYLE),
         html.Br(),
         
         html.Div(id='strike-container', children=[
@@ -79,9 +86,9 @@ contract_editor = html.Div(
                     marks={i: f'{i}%' for i in range(80, 121, 10)},
                     tooltip={"placement": "bottom", "always_visible": True}
                 ),
-                style={'flex': '1', 'min-width': '300px'}  # Ensure the slider has a minimum width
+                style={'flex': '1', 'min-width': '300px', 'width': '100%'}  # Ensure the slider has a minimum width and full width
             ),
-        ], style={'display': 'none', 'align-items': 'center', 'width': '100%'}),
+        ], style=NONE_STYLE),
         html.Br(),
         
         html.Div(id='cap-floor-container', children=[
@@ -96,10 +103,10 @@ contract_editor = html.Div(
                     marks={i: f'{i}%' for i in range(-10, 11, 5)},
                     tooltip={"placement": "bottom", "always_visible": True}
                 ),
-                style={'flex': '1', 'min-width': '240px'}  # Ensure the range slider has a minimum width
+                style={'flex': '1', 'min-width': '230px', 'width': '100%'}  # Ensure the range slider has a minimum width and full width
             ),
             html.Label("Cap", style={'margin-left': '10px', 'min-width': '60px'})
-        ], style={'display': 'none', 'align-items': 'center', 'width': '100%'}),
+        ], style=NONE_STYLE),
         
         dcc.Store(id="ctr-params", storage_type="session"),
         html.Br(),
@@ -150,15 +157,11 @@ app.layout = dbc.Container(
             placement="end",
         ),
     ],
+    fluid=True,
 )
-
 
 # Collect parameters from the contract editor and store them in a dict.
 @callback(
-    Output("ctr-params", "data"),
-    Output("option-type-container", "style"),
-    Output("strike-container", "style"),
-    Output("cap-floor-container", "style"),
     Input("ctr-ticker", "value"),
     Input("ctr-type", "value"),
     Input("ctr-option-type", "value"),
@@ -166,27 +169,30 @@ app.layout = dbc.Container(
     Input("ctr-cap-floor", "value"),
 )
 def update_graph(ticker, contract_type, option_type, strike, cap_floor):
-    # Set the styles for each input container based on the contract type
-    option_type_style = {'display': 'none'}
-    strike_style = {'display': 'none'}
-    cap_floor_style = {'display': 'none'}
+    option_type_style = NONE_STYLE
+    strike_style = NONE_STYLE
+    cap_floor_style = NONE_STYLE
     
     if contract_type in ["Vanilla Option", "Knockout Option"]:
-        option_type_style = {'display': 'flex', 'align-items': 'center'}
-        strike_style = {'display': 'flex', 'align-items': 'center', 'width': '100%', 'min-width': '300px'}
+        option_type_style = OPTION_TYPE_STYLE
+        strike_style = STRIKE_STYLE
     elif contract_type in ["Discount Certificate", "Reverse Convertible"]:
-        strike_style = {'display': 'flex', 'align-items': 'center', 'width': '100%', 'min-width': '300px'}
+        strike_style = STRIKE_STYLE
     elif contract_type == "Cliquet":
-        cap_floor_style = {'display': 'flex', 'align-items': 'center', 'width': '100%', 'min-width': '300px'}
+        cap_floor_style = CAP_FLOOR_STYLE
     
     contract_params = {
         "ticker": ticker,
         "ctr-type": contract_type,
         "option_type": option_type,
         "strike": strike,
-        "cap_floor": cap_floor, 
+        "cap_floor": cap_floor,
     }
-    return contract_params, option_type_style, strike_style, cap_floor_style
+    
+    set_props("option-type-container", {"style": option_type_style})
+    set_props("strike-container", {"style": strike_style})
+    set_props("cap-floor-container", {"style": cap_floor_style})
+    set_props("ctr-params", {"data": contract_params})
 
 
 # Toggle the offcanvas to show the contract description.
