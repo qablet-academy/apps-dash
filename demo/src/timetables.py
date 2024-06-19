@@ -98,7 +98,6 @@ def create_reverse_cb_timetable(monthend_datetimes, spot, trial, params):
 def create_barrier_timetable(monthend_datetimes, spot, trial, params):
     """Create the timetable for the barrier option."""
     ticker = params["ticker"]
-    strike = params.get("strike", spot)
 
     m_per = 1
     m_exp = 12
@@ -107,8 +106,7 @@ def create_barrier_timetable(monthend_datetimes, spot, trial, params):
     return OptionKO(
         ccy="USD",
         asset_name=ticker,
-        #strike=strike,
-        strike = params.get("strike", 100) * spot / 100,
+        strike=params.get("strike", 100) * spot / 100,
         maturity=barrier_dts[-1],
         is_call=params["option_type"] == "Call",
         barrier=spot * 1.2,
@@ -121,7 +119,7 @@ def create_barrier_timetable(monthend_datetimes, spot, trial, params):
 def create_vanilla_timetable(monthend_datetimes, spot, trial, params):
     """Create the timetable for the vanilla option."""
     ticker = params["ticker"]
-    
+
     m_per = 3
     m_exp = 12
     barrier_dts = monthend_datetimes[trial + m_per : trial + m_exp + 1 : m_per]
@@ -129,7 +127,7 @@ def create_vanilla_timetable(monthend_datetimes, spot, trial, params):
     return Option(
         ccy="USD",
         asset_name=ticker,
-        strike = params.get("strike", 100) * spot / 100,
+        strike=params.get("strike", 100) * spot / 100,
         maturity=barrier_dts[-1],  # simplify later
         is_call=params["option_type"] == "Call",
     )
@@ -144,7 +142,9 @@ def create_cliquet_timetable(monthend_datetimes, spot, trial, params):
     fix_dates = monthend_datetimes[trial + m_per : trial + m_exp + 1 : m_per]
 
     # Reverse cap_floor values and divide by 100
-    local_cap, local_floor = [val / 100 for val in reversed(params.get("cap_floor", [0.05, -0.05]))]
+    local_cap, local_floor = [
+        val / 100 for val in reversed(params.get("cap_floor", [0.05, -0.05]))
+    ]
 
     return Accumulator(
         ccy="USD",
@@ -154,7 +154,6 @@ def create_cliquet_timetable(monthend_datetimes, spot, trial, params):
         local_cap=local_cap,
         local_floor=local_floor,
     )
-
 
 
 def extend_timetable(tt1, tt2):

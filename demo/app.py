@@ -38,10 +38,20 @@ report_nav = dbc.Nav(
 )
 
 # Constants for styles
-NONE_STYLE = {'display': 'none'}
-OPTION_TYPE_STYLE = {'display': 'flex', 'align-items': 'center'}
-STRIKE_STYLE = {'display': 'flex', 'align-items': 'center', 'width': '100%', 'min-width': '300px'}
-CAP_FLOOR_STYLE = {'display': 'flex', 'align-items': 'center', 'width': '100%', 'min-width': '300px'}
+NONE_STYLE = {"display": "none"}
+OPTION_TYPE_STYLE = {"display": "flex", "align-items": "center"}
+STRIKE_STYLE = {
+    "display": "flex",
+    "align-items": "center",
+    "width": "100%",
+    "min-width": "300px",
+}
+CAP_FLOOR_STYLE = {
+    "display": "flex",
+    "align-items": "center",
+    "width": "100%",
+    "min-width": "300px",
+}
 
 # Contract editor
 contract_editor = html.Div(
@@ -58,56 +68,92 @@ contract_editor = html.Div(
             id="ctr-type",
         ),
         html.Br(),
-        
-        html.Div(id='option-type-container', children=[
-            html.Label("Option Type", style={'margin-right': '10px', 'min-width': '100px'}),
-            dcc.RadioItems(
-                options=[
-                    {'label': 'Call', 'value': 'Call'},
-                    {'label': 'Put', 'value': 'Put'}
-                ],
-                value='Call',
-                id='ctr-option-type',
-                inline=True,
-                labelStyle={'margin-right': '20px', 'display': 'inline-block'}  # Add spacing between radio buttons
-            ),
-        ], style=NONE_STYLE),
-        html.Br(),
-        
-        html.Div(id='strike-container', children=[
-            html.Label("Strike", style={'margin-right': '10px', 'min-width': '50px'}),
-            html.Div(
-                dcc.Slider(
-                    id='ctr-strike',
-                    min=80,
-                    max=120,
-                    step=1,
-                    value=100,
-                    marks={i: f'{i}%' for i in range(80, 121, 10)},
-                    tooltip={"placement": "bottom", "always_visible": True}
+        html.Div(
+            id="option-type-container",
+            children=[
+                html.Label(
+                    "Option Type",
+                    style={"margin-right": "10px", "min-width": "100px"},
                 ),
-                style={'flex': '1', 'min-width': '300px', 'width': '100%'}  # Ensure the slider has a minimum width and full width
-            ),
-        ], style=NONE_STYLE),
-        html.Br(),
-        
-        html.Div(id='cap-floor-container', children=[
-            html.Label("Floor", style={'margin-right': '10px', 'min-width': '60px'}),
-            html.Div(
-                dcc.RangeSlider(
-                    id='ctr-cap-floor',
-                    min=-10,
-                    max=10,
-                    step=0.1,
-                    value=[-5, 5],
-                    marks={i: f'{i}%' for i in range(-10, 11, 5)},
-                    tooltip={"placement": "bottom", "always_visible": True}
+                dcc.RadioItems(
+                    options=[
+                        {"label": "Call", "value": "Call"},
+                        {"label": "Put", "value": "Put"},
+                    ],
+                    value="Call",
+                    id="ctr-option-type",
+                    inline=True,
+                    labelStyle={
+                        "margin-right": "20px",
+                        "display": "inline-block",
+                    },  # Add spacing between radio buttons
                 ),
-                style={'flex': '1', 'min-width': '230px', 'width': '100%'}  # Ensure the range slider has a minimum width and full width
-            ),
-            html.Label("Cap", style={'margin-left': '10px', 'min-width': '60px'})
-        ], style=NONE_STYLE),
-        
+            ],
+            style=NONE_STYLE,
+        ),
+        html.Br(),
+        html.Div(
+            id="strike-container",
+            children=[
+                html.Label(
+                    "Strike",
+                    style={"margin-right": "10px", "min-width": "50px"},
+                ),
+                html.Div(
+                    dcc.Slider(
+                        id="ctr-strike",
+                        min=80,
+                        max=120,
+                        step=1,
+                        value=100,
+                        marks={i: f"{i}%" for i in range(80, 121, 10)},
+                        tooltip={
+                            "placement": "bottom",
+                            "always_visible": True,
+                        },
+                    ),
+                    style={
+                        "flex": "1",
+                        "min-width": "300px",
+                        "width": "100%",
+                    },  # Ensure the slider has a minimum width and full width
+                ),
+            ],
+            style=STRIKE_STYLE,
+        ),
+        html.Br(),
+        html.Div(
+            id="cap-floor-container",
+            children=[
+                html.Label(
+                    "Floor",
+                    style={"margin-right": "10px", "min-width": "60px"},
+                ),
+                html.Div(
+                    dcc.RangeSlider(
+                        id="ctr-cap-floor",
+                        min=-10,
+                        max=10,
+                        step=0.1,
+                        value=[-5, 5],
+                        marks={i: f"{i}%" for i in range(-10, 11, 5)},
+                        tooltip={
+                            "placement": "bottom",
+                            "always_visible": True,
+                        },
+                    ),
+                    style={
+                        "flex": "1",
+                        "min-width": "230px",
+                        "width": "100%",
+                    },  # Ensure the range slider has a minimum width and full width
+                ),
+                html.Label(
+                    "Cap", style={"margin-left": "10px", "min-width": "60px"}
+                ),
+            ],
+            style=NONE_STYLE,
+        ),
         dcc.Store(id="ctr-params", storage_type="session"),
         html.Br(),
         dbc.Button(
@@ -160,19 +206,16 @@ app.layout = dbc.Container(
     fluid=True,
 )
 
-# Collect parameters from the contract editor and store them in a dict.
+
 @callback(
-    Input("ctr-ticker", "value"),
     Input("ctr-type", "value"),
-    Input("ctr-option-type", "value"),
-    Input("ctr-strike", "value"),
-    Input("ctr-cap-floor", "value"),
 )
-def update_graph(ticker, contract_type, option_type, strike, cap_floor):
+def update_editor(contract_type):
+    """Update visibility of contract parameters based on contract type."""
     option_type_style = NONE_STYLE
     strike_style = NONE_STYLE
     cap_floor_style = NONE_STYLE
-    
+
     if contract_type in ["Vanilla Option", "Knockout Option"]:
         option_type_style = OPTION_TYPE_STYLE
         strike_style = STRIKE_STYLE
@@ -180,7 +223,23 @@ def update_graph(ticker, contract_type, option_type, strike, cap_floor):
         strike_style = STRIKE_STYLE
     elif contract_type == "Cliquet":
         cap_floor_style = CAP_FLOOR_STYLE
-    
+
+    set_props("option-type-container", {"style": option_type_style})
+    set_props("strike-container", {"style": strike_style})
+    set_props("cap-floor-container", {"style": cap_floor_style})
+
+
+@callback(
+    Output("ctr-params", "data"),
+    Input("ctr-ticker", "value"),
+    Input("ctr-type", "value"),
+    Input("ctr-option-type", "value"),
+    Input("ctr-strike", "value"),
+    Input("ctr-cap-floor", "value"),
+)
+def update_graph(ticker, contract_type, option_type, strike, cap_floor):
+    """Collect parameters from the contract editor and store them in a dict."""
+
     contract_params = {
         "ticker": ticker,
         "ctr-type": contract_type,
@@ -188,11 +247,8 @@ def update_graph(ticker, contract_type, option_type, strike, cap_floor):
         "strike": strike,
         "cap_floor": cap_floor,
     }
-    
-    set_props("option-type-container", {"style": option_type_style})
-    set_props("strike-container", {"style": strike_style})
-    set_props("cap-floor-container", {"style": cap_floor_style})
-    set_props("ctr-params", {"data": contract_params})
+
+    return contract_params
 
 
 # Toggle the offcanvas to show the contract description.
