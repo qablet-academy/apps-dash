@@ -50,6 +50,7 @@ def create_timetable(monthend_datetimes, spot, trial, params):
 def create_autocallable_timetable(monthend_datetimes, spot, trial, params):
     """Create the timetable for the discount certificate."""
     ticker = params["ticker"]
+    strike = params.get("strike", 80)
 
     m_per = 3
     m_exp = 12
@@ -61,7 +62,7 @@ def create_autocallable_timetable(monthend_datetimes, spot, trial, params):
         ccy="USD",
         asset_name=ticker,
         initial_spot=spot,
-        strike=80,  # percent
+        strike=strike,  # percent
         accrual_start=accrual_start,
         maturity=barrier_dts[-1],
         barrier=100,
@@ -73,6 +74,7 @@ def create_autocallable_timetable(monthend_datetimes, spot, trial, params):
 def create_reverse_cb_timetable(monthend_datetimes, spot, trial, params):
     """Create the timetable for the reverse cb."""
     ticker = params["ticker"]
+    strike = params.get("strike", 80)
 
     m_per = 3
     m_exp = 12
@@ -84,7 +86,7 @@ def create_reverse_cb_timetable(monthend_datetimes, spot, trial, params):
         ccy="USD",
         asset_name=ticker,
         initial_spot=spot,
-        strike=80,  # percent
+        strike=strike,  # percent
         accrual_start=accrual_start,
         maturity=barrier_dts[-1],
         barrier=100,
@@ -104,9 +106,9 @@ def create_barrier_timetable(monthend_datetimes, spot, trial, params):
     return OptionKO(
         ccy="USD",
         asset_name=ticker,
-        strike=spot,
+        strike=params.get("strike", 100) * spot / 100,
         maturity=barrier_dts[-1],
-        is_call=True,
+        is_call=params["option_type"] == "Call",
         barrier=spot * 1.2,
         barrier_type="Up/Out",
         barrier_dates=barrier_dts,
@@ -125,9 +127,9 @@ def create_vanilla_timetable(monthend_datetimes, spot, trial, params):
     return Option(
         ccy="USD",
         asset_name=ticker,
-        strike=spot,
+        strike=params.get("strike", 100) * spot / 100,
         maturity=barrier_dts[-1],  # simplify later
-        is_call=True,
+        is_call=params["option_type"] == "Call",
     )
 
 
@@ -139,13 +141,15 @@ def create_cliquet_timetable(monthend_datetimes, spot, trial, params):
     m_exp = 12
     fix_dates = monthend_datetimes[trial + m_per : trial + m_exp + 1 : m_per]
 
+    floor, cap = params.get("floor_cap", [-5, 5])
+
     return Accumulator(
         ccy="USD",
         asset_name=ticker,
         fix_dates=fix_dates,
         global_floor=0.0,
-        local_cap=0.05,
-        local_floor=-0.05,
+        local_cap=cap / 100,
+        local_floor=floor / 100,
     )
 
 

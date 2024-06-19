@@ -39,7 +39,9 @@ def get_cf(pricing_ts, timetable, stats):
 
     df = pl.from_arrow(stats)
     # get the timestamp of the events, corresponding to the index in the stats
-    ts_col = pl.from_arrow(timetable["events"]["time"])[df["index"]]
+    ts_col = pl.from_arrow(
+        timetable["events"]["time"], schema={"time": pl.Int64}
+    )[df["index"]]
     df = df.with_columns(ts=ts_col)
     # net cashflows by timestamp
     df = df.group_by("ts").agg(pl.col("value").sum())

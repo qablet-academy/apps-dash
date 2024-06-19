@@ -2,7 +2,7 @@ import sys
 from os.path import dirname
 import dash
 import dash_bootstrap_components as dbc
-from dash import Input, Output, State, callback, dcc, html
+from dash import Input, Output, State, callback, dcc, html, set_props
 from src.about import tt_description
 from src.timetables import CONTRACT_TYPES
 
@@ -13,7 +13,6 @@ app = dash.Dash(
 )
 server = app.server
 
-
 SIDEBAR_STYLE = {
     "position": "fixed",
     "top": 0,
@@ -21,6 +20,7 @@ SIDEBAR_STYLE = {
     "bottom": 0,
     "width": "24%",
     "padding": "1rem 1rem",
+    "overflow-y": "auto",
 }
 
 # Nav to select the page
@@ -37,11 +37,27 @@ report_nav = dbc.Nav(
     pills=True,
 )
 
+# Constants for styles
+NONE_STYLE = {"display": "none"}
+OPTION_TYPE_STYLE = {"display": "flex", "align-items": "center"}
+STRIKE_STYLE = {
+    "display": "flex",
+    "align-items": "center",
+    "width": "100%",
+    "min-width": "300px",
+}
+FLOOR_CAP_STYLE = {
+    "display": "flex",
+    "align-items": "center",
+    "width": "100%",
+    "min-width": "300px",
+}
+
 # Contract editor
 contract_editor = html.Div(
     [
         dcc.Dropdown(
-            ["SPX", "EUR", "BTC","FTSE"],
+            ["SPX", "EUR", "BTC", "FTSE"],
             "SPX",
             id="ctr-ticker",
         ),
@@ -50,6 +66,93 @@ contract_editor = html.Div(
             CONTRACT_TYPES,
             CONTRACT_TYPES[0],
             id="ctr-type",
+        ),
+        html.Br(),
+        html.Div(
+            id="option-type-container",
+            children=[
+                html.Label(
+                    "Option Type",
+                    style={"margin-right": "10px", "min-width": "100px"},
+                ),
+                dcc.RadioItems(
+                    options=[
+                        {"label": "Call", "value": "Call"},
+                        {"label": "Put", "value": "Put"},
+                    ],
+                    value="Call",
+                    id="ctr-option-type",
+                    inline=True,
+                    labelStyle={
+                        "margin-right": "20px",
+                        "display": "inline-block",
+                    },  # Add spacing between radio buttons
+                ),
+            ],
+            style=NONE_STYLE,
+        ),
+        html.Br(),
+        html.Div(
+            id="strike-container",
+            children=[
+                html.Label(
+                    "Strike",
+                    style={"margin-right": "10px", "min-width": "50px"},
+                ),
+                html.Div(
+                    dcc.Slider(
+                        id="ctr-strike",
+                        min=80,
+                        max=120,
+                        step=1,
+                        value=100,
+                        marks={i: f"{i}%" for i in range(80, 121, 10)},
+                        tooltip={
+                            "placement": "bottom",
+                            "always_visible": True,
+                        },
+                    ),
+                    style={
+                        "flex": "1",
+                        "min-width": "300px",
+                        "width": "100%",
+                    },  # Ensure the slider has a minimum width and full width
+                ),
+            ],
+            style=STRIKE_STYLE,
+        ),
+        html.Br(),
+        html.Div(
+            id="floor-cap-container",
+            children=[
+                html.Label(
+                    "Floor",
+                    style={"margin-right": "10px", "min-width": "60px"},
+                ),
+                html.Div(
+                    dcc.RangeSlider(
+                        id="ctr-floor-cap",
+                        min=-10,
+                        max=10,
+                        step=0.1,
+                        value=[-5, 5],
+                        marks={i: f"{i}%" for i in range(-10, 11, 5)},
+                        tooltip={
+                            "placement": "bottom",
+                            "always_visible": True,
+                        },
+                    ),
+                    style={
+                        "flex": "1",
+                        "min-width": "230px",
+                        "width": "100%",
+                    },  # Ensure the range slider has a minimum width and full width
+                ),
+                html.Label(
+                    "Cap", style={"margin-left": "10px", "min-width": "60px"}
+                ),
+            ],
+            style=NONE_STYLE,
         ),
         dcc.Store(id="ctr-params", storage_type="session"),
         html.Br(),
@@ -100,20 +203,51 @@ app.layout = dbc.Container(
             placement="end",
         ),
     ],
+    fluid=True,
 )
 
 
-# Collect parameters from the contract editor and store them in a dict.
+@callback(
+    Input("ctr-type", "value"),
+)
+def update_editor(contract_type):
+    """Update visibility of contract parameters based on contract type."""
+    option_type_style = NONE_STYLE
+    strike_style = NONE_STYLE
+    floor_cap_style = NONE_STYLE
+
+    if contract_type in ["Vanilla Option", "Knockout Option"]:
+        option_type_style = OPTION_TYPE_STYLE
+        strike_style = STRIKE_STYLE
+    elif contract_type in ["Discount Certificate", "Reverse Convertible"]:
+        strike_style = STRIKE_STYLE
+    elif contract_type == "Cliquet":
+        floor_cap_style = FLOOR_CAP_STYLE
+
+    set_props("option-type-container", {"style": option_type_style})
+    set_props("strike-container", {"style": strike_style})
+    set_props("floor-cap-container", {"style": floor_cap_style})
+
+
 @callback(
     Output("ctr-params", "data"),
     Input("ctr-ticker", "value"),
     Input("ctr-type", "value"),
+    Input("ctr-option-type", "value"),
+    Input("ctr-strike", "value"),
+    Input("ctr-floor-cap", "value"),
 )
-def update_graph(ticker, contract_type):
+def update_graph(ticker, contract_type, option_type, strike, floor_cap):
+    """Collect parameters from the contract editor and store them in a dict."""
+
     contract_params = {
         "ticker": ticker,
         "ctr-type": contract_type,
+        "option_type": option_type,
+        "strike": strike,
+        "floor_cap": floor_cap,
     }
+
     return contract_params
 
 

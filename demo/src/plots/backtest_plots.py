@@ -4,8 +4,9 @@ Methods to crete figures for the backtest page.
 from datetime import datetime
 
 import numpy as np
-import plotly.graph_objects as go
 import pytz
+import pandas as pd
+import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from src.model import MS_IN_DAY, DataModel
 from src.utils import ROOTDIR
@@ -31,7 +32,8 @@ def plot_cashflow(dates, cf, ticker):
     prc_dt = datetime.fromtimestamp(prc_ts // 1000, pytz.utc)
     end_dt = datetime.fromtimestamp(end_ts // 1000, pytz.utc)
     trade_price = cf[2]
-    x = np.array(cf[0]).astype("datetime64[ms]")
+
+    x = pd.DatetimeIndex(cf[0], dtype="datetime64[ms, UTC]")
     x = np.insert(x, 0, prc_dt)
     y = np.array(cf[1])
     y = np.insert(y, 0, -trade_price)
@@ -71,7 +73,7 @@ def plot_cashflow(dates, cf, ticker):
     # A plot for the ticker on the bottom sharing x axis with the scatter plot
     filename = ROOTDIR + "/data/spots.csv"
     csvdata = DataModel(filename)
-    tickerdf = csvdata.get_curve(prc_dt, end_dt)
+    tickerdf = csvdata.get_curve(prc_dt, end_dt).to_pandas()
     fig.add_trace(
         go.Scatter(
             x=tickerdf["date"],
@@ -115,7 +117,7 @@ def plot_cashflow(dates, cf, ticker):
         row=2,
         col=1,
     )
-    end_spot = tickerdf[ticker][-1]
+    end_spot = tickerdf[ticker].iloc[-1]
     fig.add_annotation(
         x=end_dt,
         y=end_spot,

@@ -80,7 +80,7 @@ def plot_cf_vs_spot(cfsums, spot, params):
         col=1,
         color="grey",
         tickformat=",.1%",
-        range=[-0.75, 1.25],
+        range=[-0.60, 0.60],
     )
     fig.update_yaxes(
         title_text=title,
@@ -88,7 +88,7 @@ def plot_cf_vs_spot(cfsums, spot, params):
         col=1,
         color="aquamarine",
         tickformat=",.1%",
-        range=[-0.75, 1.25],
+        range=[0.0, 1.25],
     )
 
     fig.update_xaxes(visible=False, row=2, col=2)
