@@ -11,7 +11,7 @@ from src.timetables import (
     create_timetable,
     extend_timetable,
 )
-from src.utils import ROOTDIR, base_dataset, update_dataset
+from src.utils import ROOTDIR, base_dataset, dataset_assets
 
 
 def model_cashflows(contract_params: dict, trial=0, vol=0.3):
@@ -25,14 +25,16 @@ def model_cashflows(contract_params: dict, trial=0, vol=0.3):
     dataset["MC"]["FLAGS"] = Stats.CASHFLOW
     dataset["MC"]["PATHS"] = 100  # Too many dots otherwise
 
-    monthend_datetimes = csvdata.monthend_datetimes(contract_params["ticker"])
-
+    ticker = contract_params["ticker"]
+    monthend_datetimes = csvdata.monthend_datetimes(ticker)
     pricing_datetime = monthend_datetimes[trial]
     pricing_ts = int(pricing_datetime.timestamp() * 1000)
 
-    spot = csvdata.get_value(contract_params["ticker"], pricing_datetime)
-    update_dataset(pricing_ts, dataset, spot, contract_params)
-    dataset["LV"]["VOL"] = vol
+    spot = csvdata.get_value(ticker, pricing_datetime)
+
+    dataset["PRICING_TS"] = pricing_ts
+    dataset["ASSETS"] = dataset_assets(spot, contract_params)
+    dataset["LV"] = {"ASSET": ticker, "VOL": vol}
 
     # create timetable for contract
     timetable = create_timetable(
@@ -56,3 +58,37 @@ def model_cashflows(contract_params: dict, trial=0, vol=0.3):
         sums.append(sum)
 
     return sums, spot
+
+
+def vol_risk(contract_params: dict, trial=0):
+    # Create the models
+    filename = ROOTDIR + "/data/spots.csv"
+    csvdata = DataModel(filename)
+    model = LVMCModel()
+
+    # prepare dataset, and turn on cashflow flag
+    dataset = base_dataset()
+
+    ticker = contract_params["ticker"]
+    monthend_datetimes = csvdata.monthend_datetimes(ticker)
+    pricing_datetime = monthend_datetimes[trial]
+    pricing_ts = int(pricing_datetime.timestamp() * 1000)
+    spot = csvdata.get_value(ticker, pricing_datetime)
+
+    # create timetable for contract
+    timetable = create_timetable(
+        monthend_datetimes, spot, trial, contract_params
+    ).timetable()
+
+    dataset["PRICING_TS"] = pricing_ts
+    dataset["ASSETS"] = dataset_assets(spot, contract_params)
+    dataset["LV"] = {"ASSET": ticker}  # Vol to be added later
+
+    vols = [0.1, 0.2, 0.3, 0.4, 0.5]
+    prices = []
+    for vol in vols:
+        dataset["LV"]["VOL"] = vol
+        price, stats = model.price(timetable, dataset)
+        prices.append(price)
+
+    return vols, prices

@@ -102,3 +102,26 @@ def plot_cf_vs_spot(cfsums, spot, params):
         showlegend=False,
     )
     return fig
+
+
+def plot_price_vol(vols, prices):
+    """Plot Price vs Vol."""
+
+    fig = go.Figure(
+        go.Scatter(
+            x=vols,
+            y=prices,
+            # mode="markers",
+            marker=dict(color="aquamarine", size=20, opacity=0.7),
+        )
+    )
+    fig.update_xaxes(tickformat=",.1%", title_text="Volatility")
+    fig.update_yaxes(tickformat=",.1f", title_text="Price")
+    fig.update_layout(
+        height=350,
+        width=350,
+        margin={"l": 40, "b": 40, "t": 10, "r": 0},
+        template="plotly_dark",
+        showlegend=False,
+    )
+    return fig

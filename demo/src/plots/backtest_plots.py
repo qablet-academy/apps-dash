@@ -4,9 +4,9 @@ Methods to crete figures for the backtest page.
 from datetime import datetime
 
 import numpy as np
-import pytz
 import pandas as pd
 import plotly.graph_objects as go
+import pytz
 from plotly.subplots import make_subplots
 from src.model import MS_IN_DAY, DataModel
 from src.utils import ROOTDIR

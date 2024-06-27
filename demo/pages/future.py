@@ -5,11 +5,11 @@ This page shows future returns projected by model.
 import dash
 import dash_daq as daq
 from dash import Input, Output, callback, dcc, html
-from src.future_cf import model_cashflows
+from src.future_cf import model_cashflows, vol_risk
 from src.plots.backtest_plots import blank_figure
-from src.plots.future_plots import plot_cf_vs_spot
+from src.plots.future_plots import plot_cf_vs_spot, plot_price_vol
 
-dash.register_page(__name__)
+dash.register_page(__name__, path="/")
 
 layout = html.Div(
     [
@@ -57,6 +57,10 @@ layout = html.Div(
                     projections.
                 """
                 ),
+                dcc.Graph(
+                    id="future-vol-plot",
+                    figure=blank_figure(),
+                ),
             ],
             style={
                 "position": "fixed",
@@ -78,7 +82,19 @@ def update_future_returns(contract_params, vol):
     """Generate cashflows from model and plot returns."""
 
     cfsums, spot = model_cashflows(contract_params, vol=vol)
-
     fig = plot_cf_vs_spot(cfsums, spot, params=contract_params)
+
+    return fig
+
+
+@callback(
+    Output("future-vol-plot", "figure"),
+    Input("ctr-params", "data"),
+)
+def update_future_vol(contract_params):
+    """Plot Price vs Volatility."""
+
+    vols, prices = vol_risk(contract_params)
+    fig = plot_price_vol(vols, prices)
 
     return fig

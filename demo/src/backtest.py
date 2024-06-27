@@ -6,7 +6,7 @@ from qablet.black_scholes.mc import LVMCModel
 
 from src.model import CFModelPyCSV, DataModel, get_cf
 from src.timetables import create_timetable
-from src.utils import ROOTDIR, base_dataset, compute_return, update_dataset
+from src.utils import ROOTDIR, base_dataset, compute_return, dataset_assets
 
 
 def run_backtest(contract_params: dict, annualized: bool = True):
@@ -29,16 +29,19 @@ def run_backtest(contract_params: dict, annualized: bool = True):
     all_ts = []
 
     # Fetch adjusted month-end dates using the monthend_datetimes method
-    monthend_datetimes = csvdata.monthend_datetimes(contract_params["ticker"])
+    ticker = contract_params["ticker"]
+    monthend_datetimes = csvdata.monthend_datetimes(ticker)
 
     m_exp = 12
     num_trials = len(monthend_datetimes) - m_exp
     for i in range(num_trials):
         pricing_datetime = monthend_datetimes[i]
         pricing_ts = int(pricing_datetime.timestamp() * 1000)
+        spot = csvdata.get_value(ticker, pricing_datetime)
 
-        spot = csvdata.get_value(contract_params["ticker"], pricing_datetime)
-        update_dataset(pricing_ts, dataset, spot, contract_params)
+        dataset["PRICING_TS"] = pricing_ts
+        dataset["ASSETS"] = dataset_assets(spot, contract_params)
+        dataset["LV"] = {"ASSET": ticker, "VOL": 0.3}
 
         timetable = create_timetable(
             monthend_datetimes, spot, i, contract_params
