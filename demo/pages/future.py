@@ -23,10 +23,10 @@ layout = html.Div(
                 html.Br(),
                 dcc.Markdown(
                     """
-                    The cashflow of the **contract** depends on the spot returns.
-                    For a vanilla option it relates to the **return at maturity** alone. However,
-                    for other contracts, knockouts and calls make the cashflow depend on prices
-                    prior to maturity.
+                    The cashflow of the contract depends on the spot returns.
+                    For a vanilla option this plot shows a clear one-to-one relationship because the cashflow depends
+                    only on the return at maturity. However, for other contracts, there are knockouts
+                    and calls prior to maturity and the plot is not one-to-one.
                 """
                 ),
             ],
@@ -48,8 +48,8 @@ layout = html.Div(
                 dcc.Markdown(
                     """
                     The **volatility** affects the pricing model's projection of future
-                    asset returns, and the model price. **Click** on any circle above, to see
-                    the cashflow vs returns plot for the corresponding volatility.
+                    asset returns, and the model price. **Click on any circle above**, to see
+                    the cashflow vs spot plot for the corresponding volatility.
                 """
                 ),
             ],
@@ -81,7 +81,7 @@ def update_future_returns(contract_params, click_data):
     cfsums, spot = model_cashflows(contract_params, vol=vol)
     fig = plot_cf_vs_spot(cfsums, spot, vol, params=contract_params)
 
-    markdown_content = f"Model Projected Contract Cashflows vs Spot Returns at **{vol * 100:.1f}% volatility**"
+    markdown_content = f"Contract Cashflows vs Spot Returns at **{vol * 100:.1f}% volatility**"
     return fig, dcc.Markdown(markdown_content)
 
 

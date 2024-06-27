@@ -75,7 +75,7 @@ def plot_cf_vs_spot(cfsums, spot, vol, params):
 
     # Update ticker returns to have percentage y axis
     fig.update_xaxes(
-        title_text=f"{ticker} return at maturity, with {vol * 100:.1f}% volatility",
+        title_text=f"{ticker} return at maturity",
         row=2,
         col=1,
         color="grey",
@@ -115,7 +115,7 @@ def plot_price_vol(vols, prices):
         )
     )
     fig.update_xaxes(tickformat=",.1%", title_text="Volatility")
-    fig.update_yaxes(tickformat=",.2f", title_text="Price")
+    fig.update_yaxes(tickformat=",.2f")
     fig.update_layout(
         height=350,
         width=350,
