@@ -3,7 +3,6 @@ This page shows future returns projected by model.
 """
 
 import dash
-import dash_daq as daq
 from dash import Input, Output, callback, dcc, html
 from src.future_cf import model_cashflows, vol_risk
 from src.plots.backtest_plots import blank_figure
@@ -16,7 +15,7 @@ layout = html.Div(
         html.Div(
             [
                 # Contract vs Spots Graph.
-                html.P("Model Projected Contract vs Spot Returns"),
+                html.P("Model Projected Contract Cashflows vs Spot Returns"),
                 dcc.Graph(
                     id="future-returns",
                     figure=blank_figure(),
@@ -31,7 +30,6 @@ layout = html.Div(
                 """
                 ),
             ],
-            # style={"display": "inline-block", "width": "95%"},
             style={
                 "position": "fixed",
                 "top": 10,
@@ -41,25 +39,18 @@ layout = html.Div(
         ),
         html.Div(
             [
-                daq.Knob(
-                    id="future-vol",
-                    # size=75,
-                    label="Volatility",
-                    labelPosition="bottom",
-                    value=0.3,
-                    min=0.0,
-                    max=0.8,
-                ),
-                dcc.Markdown(
-                    """
-                    A **pricing model** produces the projection of future
-                    asset returns. Tweak the **volatility** to see how it affects the
-                    projections.
-                """
-                ),
+                html.P("Model Price vs Volatility"),
                 dcc.Graph(
                     id="future-vol-plot",
                     figure=blank_figure(),
+                ),
+                html.Br(),
+                dcc.Markdown(
+                    """
+                    The **volatility** affects the pricing model's projection of future
+                    asset returns, and the model price. Click on any circle above, to see
+                    the cashflow vs returns plot for the corresponding volatility.
+                """
                 ),
             ],
             style={
@@ -76,13 +67,18 @@ layout = html.Div(
 @callback(
     Output("future-returns", "figure"),
     Input("ctr-params", "data"),
-    Input("future-vol", "value"),
+    Input("future-vol-plot", "clickData"),
 )
-def update_future_returns(contract_params, vol):
+def update_future_returns(contract_params, click_data):
     """Generate cashflows from model and plot returns."""
 
+    if click_data is None:
+        vol = 0.2
+    else:
+        vol = click_data["points"][0]["x"]
+
     cfsums, spot = model_cashflows(contract_params, vol=vol)
-    fig = plot_cf_vs_spot(cfsums, spot, params=contract_params)
+    fig = plot_cf_vs_spot(cfsums, spot, vol, params=contract_params)
 
     return fig
 

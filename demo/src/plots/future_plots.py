@@ -8,16 +8,16 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 
-def plot_cf_vs_spot(cfsums, spot, params):
+def plot_cf_vs_spot(cfsums, spot, vol, params):
     if params["ctr-type"] in [
         "Knockout Option",
         "Vanilla Option",
     ]:
         y = cfsums[0] / spot
-        title = "Cashflow of Contract (% of Spot)"
+        title = "Contract Cashflow (% of Spot)"
     else:
         y = cfsums[0] / 100
-        title = "Cashflow of Contract (% of Notional)"
+        title = "Contract Cashflow (% of Notional)"
 
     x = cfsums[1] * 1.0305 / spot - 1
     ticker = params["ticker"]
@@ -75,7 +75,7 @@ def plot_cf_vs_spot(cfsums, spot, params):
 
     # Update ticker returns to have percentage y axis
     fig.update_xaxes(
-        title_text=f"{ticker} return at maturity",
+        title_text=f"{ticker} return at maturity, with {vol * 100:.1f}% volatility",
         row=2,
         col=1,
         color="grey",
@@ -112,7 +112,7 @@ def plot_price_vol(vols, prices):
             x=vols,
             y=prices,
             # mode="markers",
-            marker=dict(color="aquamarine", size=20, opacity=0.7),
+            marker=dict(color="coral", size=20, opacity=0.7),
         )
     )
     fig.update_xaxes(tickformat=",.1%", title_text="Volatility")

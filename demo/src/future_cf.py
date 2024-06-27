@@ -84,11 +84,11 @@ def vol_risk(contract_params: dict, trial=0):
     dataset["ASSETS"] = dataset_assets(spot, contract_params)
     dataset["LV"] = {"ASSET": ticker}  # Vol to be added later
 
-    vols = [0.1, 0.2, 0.3, 0.4, 0.5]
+    vols = [0.02, 0.05, 0.1, 0.2, 0.3]
     prices = []
     for vol in vols:
         dataset["LV"]["VOL"] = vol
-        price, stats = model.price(timetable, dataset)
+        price, _ = model.price(timetable, dataset)
         prices.append(price)
 
     return vols, prices
