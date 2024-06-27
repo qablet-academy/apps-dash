@@ -8,16 +8,16 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 
-def plot_cf_vs_spot(cfsums, spot, params):
+def plot_cf_vs_spot(cfsums, spot, vol, params):
     if params["ctr-type"] in [
         "Knockout Option",
         "Vanilla Option",
     ]:
         y = cfsums[0] / spot
-        title = "Cashflow of Contract (% of Spot)"
+        title = "Contract Cashflow (% of Spot)"
     else:
         y = cfsums[0] / 100
-        title = "Cashflow of Contract (% of Notional)"
+        title = "Contract Cashflow (% of Notional)"
 
     x = cfsums[1] * 1.0305 / spot - 1
     ticker = params["ticker"]
@@ -98,6 +98,28 @@ def plot_cf_vs_spot(cfsums, spot, params):
         height=500,
         margin={"l": 40, "b": 40, "t": 10, "r": 0},
         hovermode="closest",
+        template="plotly_dark",
+        showlegend=False,
+    )
+    return fig
+
+
+def plot_price_vol(vols, prices):
+    """Plot Price vs Vol."""
+
+    fig = go.Figure(
+        go.Scatter(
+            x=vols,
+            y=prices,
+            marker=dict(color="coral", size=20, opacity=0.7),
+        )
+    )
+    fig.update_xaxes(tickformat=",.1%", title_text="Volatility")
+    fig.update_yaxes(tickformat=",.2f")
+    fig.update_layout(
+        height=350,
+        width=350,
+        margin={"l": 40, "b": 40, "t": 10, "r": 0},
         template="plotly_dark",
         showlegend=False,
     )

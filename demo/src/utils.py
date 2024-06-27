@@ -50,7 +50,7 @@ def base_dataset():
     }
 
 
-def update_dataset(pricing_ts, dataset, spot, params):
+def dataset_assets(spot, params):
     """update assets data with equity forwards (need only one)."""
 
     ticker = params["ticker"]
@@ -65,11 +65,4 @@ def update_dataset(pricing_ts, dataset, spot, params):
     fwds = spot * np.exp((rates - divs) * times)
     assets_data[ticker] = ("FORWARDS", np.column_stack((times, fwds)))
 
-    # update dataset
-    dataset["PRICING_TS"] = pricing_ts
-    dataset["ASSETS"] = assets_data
-    dataset["LV"] = {
-        "ASSET": ticker,
-        "VOL": 0.3,  # hardcoded vol (use vix perhaps?)
-    }
-    return spot
+    return assets_data

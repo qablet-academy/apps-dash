@@ -4,11 +4,11 @@ This page demonstrates backtesting a given contract type, and show IRR and cashf
 
 import dash
 from dash import Input, Output, callback, dcc, html
+from dash.exceptions import PreventUpdate
 from src.backtest import run_backtest
 from src.plots.backtest_plots import blank_figure, plot_cashflow, plot_irr
-from dash.exceptions import PreventUpdate
 
-dash.register_page(__name__, path="/")
+dash.register_page(__name__)
 
 
 layout = html.Div(
