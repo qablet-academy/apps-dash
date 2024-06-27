@@ -15,7 +15,7 @@ layout = html.Div(
         html.Div(
             [
                 # Contract vs Spots Graph.
-                html.P("Model Projected Contract Cashflows vs Spot Returns"),
+                html.Div(id="markdown-output", children=[]),
                 dcc.Graph(
                     id="future-returns",
                     figure=blank_figure(),
@@ -48,7 +48,7 @@ layout = html.Div(
                 dcc.Markdown(
                     """
                     The **volatility** affects the pricing model's projection of future
-                    asset returns, and the model price. Click on any circle above, to see
+                    asset returns, and the model price. **Click** on any circle above, to see
                     the cashflow vs returns plot for the corresponding volatility.
                 """
                 ),
@@ -66,6 +66,7 @@ layout = html.Div(
 
 @callback(
     Output("future-returns", "figure"),
+    Output("markdown-output", "children"),
     Input("ctr-params", "data"),
     Input("future-vol-plot", "clickData"),
 )
@@ -80,7 +81,8 @@ def update_future_returns(contract_params, click_data):
     cfsums, spot = model_cashflows(contract_params, vol=vol)
     fig = plot_cf_vs_spot(cfsums, spot, vol, params=contract_params)
 
-    return fig
+    markdown_content = f"Model Projected Contract Cashflows vs Spot Returns at **{vol * 100:.1f}% volatility**"
+    return fig, dcc.Markdown(markdown_content)
 
 
 @callback(

@@ -111,12 +111,11 @@ def plot_price_vol(vols, prices):
         go.Scatter(
             x=vols,
             y=prices,
-            # mode="markers",
             marker=dict(color="coral", size=20, opacity=0.7),
         )
     )
     fig.update_xaxes(tickformat=",.1%", title_text="Volatility")
-    fig.update_yaxes(tickformat=",.1f", title_text="Price")
+    fig.update_yaxes(tickformat=",.2f", title_text="Price")
     fig.update_layout(
         height=350,
         width=350,
