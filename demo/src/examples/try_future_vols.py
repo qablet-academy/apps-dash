@@ -1,6 +1,7 @@
 """
 Script to test the vol risk in the future page without launching the app.
 """
+
 import sys
 from os.path import dirname
 

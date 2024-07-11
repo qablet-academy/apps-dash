@@ -202,6 +202,7 @@ app.layout = dbc.Container(
             title="About this Contract",
             is_open=False,
             placement="end",
+            style={"width": "450px"},
         ),
     ],
     fluid=True,

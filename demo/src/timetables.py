@@ -1,6 +1,7 @@
 """
 Create timetables for different contracts, using the contract parameters dict.
 """
+
 import polars as pl
 import pyarrow as pa
 from qablet_contracts.eq.autocall import DiscountCert, ReverseCB
@@ -158,7 +159,8 @@ def extend_timetable(tt1, tt2):
     Assume that all events in tt2 are after the last event in tt1."""
     df1 = pl.from_arrow(tt1["events"])
     df2 = pl.from_arrow(tt2["events"])
-    tt1["events"] = df1.extend(df2)._df.to_arrow()[0].cast(TS_EVENT_SCHEMA)
+    df1.extend(df2)
+    tt1["events"] = df1.to_arrow().to_batches()[0].cast(TS_EVENT_SCHEMA)
 
 
 def create_forward_timetable(end_dt, params):

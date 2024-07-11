@@ -16,21 +16,17 @@ from src.utils import ROOTDIR, base_dataset, dataset_assets
 
 def model_cashflows(contract_params: dict, trial=0, vol=0.3):
     # Create the models
-    filename = ROOTDIR + "/data/spots.csv"
-    csvdata = DataModel(filename)
+    csvdata = DataModel(f"{ROOTDIR}/data/spots.csv")
     model = LVMCModel()
-
-    # prepare dataset, and turn on cashflow flag
-    dataset = base_dataset()
-    dataset["MC"]["FLAGS"] = Stats.CASHFLOW
-    dataset["MC"]["PATHS"] = 100  # Too many dots otherwise
 
     ticker = contract_params["ticker"]
     monthend_datetimes = csvdata.monthend_datetimes(ticker)
     pricing_datetime = monthend_datetimes[trial]
     pricing_ts = int(pricing_datetime.timestamp() * 1000)
-
     spot = csvdata.get_value(ticker, pricing_datetime)
+
+    # prepare dataset
+    dataset = base_dataset()
 
     dataset["PRICING_TS"] = pricing_ts
     dataset["ASSETS"] = dataset_assets(spot, contract_params)
@@ -40,6 +36,10 @@ def model_cashflows(contract_params: dict, trial=0, vol=0.3):
     timetable = create_timetable(
         monthend_datetimes, spot, trial, contract_params
     ).timetable()
+
+    # turn on cashflow flag
+    dataset["MC"]["FLAGS"] = Stats.CASHFLOW
+    dataset["MC"]["PATHS"] = 100  # Too many dots otherwise
 
     # create forward timetable
     end_dt = timetable["events"]["time"][-1].as_py()
@@ -62,12 +62,8 @@ def model_cashflows(contract_params: dict, trial=0, vol=0.3):
 
 def vol_risk(contract_params: dict, trial=0):
     # Create the models
-    filename = ROOTDIR + "/data/spots.csv"
-    csvdata = DataModel(filename)
+    csvdata = DataModel(f"{ROOTDIR}/data/spots.csv")
     model = LVMCModel()
-
-    # prepare dataset, and turn on cashflow flag
-    dataset = base_dataset()
 
     ticker = contract_params["ticker"]
     monthend_datetimes = csvdata.monthend_datetimes(ticker)
@@ -75,14 +71,17 @@ def vol_risk(contract_params: dict, trial=0):
     pricing_ts = int(pricing_datetime.timestamp() * 1000)
     spot = csvdata.get_value(ticker, pricing_datetime)
 
-    # create timetable for contract
-    timetable = create_timetable(
-        monthend_datetimes, spot, trial, contract_params
-    ).timetable()
+    # prepare dataset
+    dataset = base_dataset()
 
     dataset["PRICING_TS"] = pricing_ts
     dataset["ASSETS"] = dataset_assets(spot, contract_params)
     dataset["LV"] = {"ASSET": ticker}  # Vol to be added later
+
+    # create timetable for contract
+    timetable = create_timetable(
+        monthend_datetimes, spot, trial, contract_params
+    ).timetable()
 
     vols = [0.02, 0.05, 0.1, 0.2, 0.3]
     prices = []

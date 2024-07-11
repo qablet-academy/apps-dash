@@ -2,7 +2,6 @@
 Methods to crete figures for the future page.
 """
 
-
 import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -114,7 +113,7 @@ def plot_price_vol(vols, prices):
             marker=dict(color="coral", size=20, opacity=0.7),
         )
     )
-    fig.update_xaxes(tickformat=",.1%", title_text="Volatility")
+    fig.update_xaxes(tickformat=",.0%", title_text="Model Volatility")
     fig.update_yaxes(tickformat=",.2f")
     fig.update_layout(
         height=350,
@@ -122,5 +121,7 @@ def plot_price_vol(vols, prices):
         margin={"l": 40, "b": 40, "t": 10, "r": 0},
         template="plotly_dark",
         showlegend=False,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
     )
     return fig

@@ -16,6 +16,12 @@ layout = html.Div(
             [
                 # Contract vs Spots Graph.
                 html.Div(id="markdown-output", children=[]),
+                dcc.Markdown(
+                    """
+                    To change the volatility, **Click on the orange points** in the plot on the right,
+                    and note how the distribution in this plot changes. 
+                """
+                ),
                 dcc.Graph(
                     id="future-returns",
                     figure=blank_figure(),
@@ -44,18 +50,10 @@ layout = html.Div(
                     id="future-vol-plot",
                     figure=blank_figure(),
                 ),
-                html.Br(),
-                dcc.Markdown(
-                    """
-                    The **volatility** affects the pricing model's projection of future
-                    asset returns, and the model price. **Click on any circle above**, to see
-                    the cashflow vs spot plot for the corresponding volatility.
-                """
-                ),
             ],
             style={
                 "position": "fixed",
-                "top": 20,
+                "top": "20%",
                 "left": "75%",  # Sidebar takes the left 25% of the screen.
                 "width": "20%",
             },
@@ -81,7 +79,7 @@ def update_future_returns(contract_params, click_data):
     cfsums, spot = model_cashflows(contract_params, vol=vol)
     fig = plot_cf_vs_spot(cfsums, spot, vol, params=contract_params)
 
-    markdown_content = f"Contract Cashflows vs Spot Returns at **{vol * 100:.1f}% volatility**"
+    markdown_content = f"Contract Cashflows vs Spot Returns at **{vol * 100:.1f}% volatility.**"
     return fig, dcc.Markdown(markdown_content)
 
 

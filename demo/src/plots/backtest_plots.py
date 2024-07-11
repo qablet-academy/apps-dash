@@ -1,6 +1,7 @@
 """
 Methods to crete figures for the backtest page.
 """
+
 from datetime import datetime
 
 import numpy as np
@@ -23,6 +24,8 @@ def blank_figure():
         margin={"l": 40, "b": 40, "t": 10, "r": 0},
         template="plotly_dark",
         showlegend=False,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
     )
     return fig
 
@@ -190,5 +193,7 @@ def plot_irr(x, y, annualized=True, ticker="SPX"):
         hovermode="closest",
         template="plotly_dark",
         showlegend=False,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
     )
     return fig

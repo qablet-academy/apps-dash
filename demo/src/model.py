@@ -79,7 +79,7 @@ class DataModel:
         """Return month-end datetimes for a given ticker."""
 
         # First generate month-end dates using Polars
-        monthend_datetimes = pl.date_range(
+        monthend_datetimes = pl.datetime_range(
             self.start_date, self.end_date, "1mo", eager=True, time_zone="UTC"
         )
 

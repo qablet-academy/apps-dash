@@ -1,6 +1,7 @@
 """
 Script to test the plots in the future page without launching the app.
 """
+
 import sys
 from os.path import dirname
 
