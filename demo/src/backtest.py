@@ -3,7 +3,8 @@ Method to run backtest for a given contract.
 """
 
 import pandas as pd
-from qablet.black_scholes.mc import LVMCModel
+from finmc.models.localvol import LVMC
+from qablet.base.mc import MCPricer
 
 from src.model import CFModelPyCSV, DataModel, get_cf
 from src.timetables import create_timetable
@@ -19,7 +20,7 @@ def run_backtest(contract_params: dict, annualized: bool = True):
     # Create the models
     filename = ROOTDIR + "/data/spots.csv"
     csvdata = DataModel(filename)
-    model = LVMCModel()
+    model = MCPricer(LVMC)
     bk_model = CFModelPyCSV(filename=filename, base="USD")
 
     # Use current divs and risk free for historical pricings
