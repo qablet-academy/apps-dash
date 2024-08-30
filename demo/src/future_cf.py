@@ -2,8 +2,9 @@
 Project Future Cashflows for a given contract.
 """
 
+from finmc.models.localvol import LVMC
 from qablet.base.flags import Stats
-from qablet.black_scholes.mc import LVMCModel
+from qablet.base.mc import MCPricer
 
 from src.model import DataModel
 from src.timetables import (
@@ -17,7 +18,7 @@ from src.utils import ROOTDIR, base_dataset, dataset_assets
 def model_cashflows(contract_params: dict, trial=0, vol=0.3):
     # Create the models
     csvdata = DataModel(f"{ROOTDIR}/data/spots.csv")
-    model = LVMCModel()
+    model = MCPricer(LVMC)
 
     ticker = contract_params["ticker"]
     monthend_datetimes = csvdata.monthend_datetimes(ticker)
@@ -63,7 +64,7 @@ def model_cashflows(contract_params: dict, trial=0, vol=0.3):
 def vol_risk(contract_params: dict, trial=0):
     # Create the models
     csvdata = DataModel(f"{ROOTDIR}/data/spots.csv")
-    model = LVMCModel()
+    model = MCPricer(LVMC)
 
     ticker = contract_params["ticker"]
     monthend_datetimes = csvdata.monthend_datetimes(ticker)

@@ -4,6 +4,7 @@ pandas
 numpy
 scipy
 matplotlib
+finmc
 qablet_contracts
 qablet-extended
 dash
