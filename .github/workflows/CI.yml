@@ -27,7 +27,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install project
-        run: pip install -r requirements.txt
+        run: make install
       - name: Run linter
         run: make lint
 
@@ -45,7 +45,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install project
-        run: pip install -r requirements.txt
+        run: make install
       - name: Run tests
         run: make test
 
@@ -65,6 +65,6 @@ jobs:
       - name: Install Pip
         run: pip install --user --upgrade pip
       - name: Install project
-        run: pip install -r requirements.txt
+        run: pip install -e .[test]
       - name: run tests
         run: pytest ./tests
