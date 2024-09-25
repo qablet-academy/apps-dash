@@ -1,14 +1,13 @@
-# Qablet
+See the [application in action here](https://apps-dash.onrender.com/)
 
-This application explores a variety of financial contracts through two lenses -
+This application explores a variety of financial contracts through two lenses.
 
-- Historical returns for trade dates in a five year period.
-- Future returns projected by model.
+# Past
+Historical returns for trade dates in a five year period.
 
-[See it in action here](https://apps-dash.onrender.com/)
+![UI Main](demo/images/dash_past.png)
 
-### Layout
+# Future
+Future returns projected by model.
 
-The application has the following layout, based on dash pages.
-
-![UI Main](demo/assets/UI_Main.png)
+![UI Main](demo/images/dash_present.png)

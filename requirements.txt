@@ -1,15 +1,16 @@
---extra-index-url ${PKG_URL}
 pyarrow
+pytest
 pandas
 numpy
 scipy
 matplotlib
 finmc
 qablet_contracts
-qablet-extended
+qablet-basic
 dash
 dash_bootstrap_components
 dash_bootstrap_templates
 dash_daq
 gunicorn
 polars
+ruff

@@ -56,7 +56,7 @@ class DataModel:
     """A Datamodel (for csv files) used by the app. We will keep it separate from
     the qablet model."""
 
-    def __init__(self, filename):
+    def __init__(self, filename="demo/data/spots.csv"):
         self.data = pl.read_csv(
             filename, try_parse_dates=True, infer_schema_length=None
         ).set_sorted("date")

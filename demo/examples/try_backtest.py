@@ -2,20 +2,15 @@
 Script to test the plots in the backtest page without launching the app.
 """
 
-import sys
-from os.path import dirname
+from demo.src.backtest import run_backtest
+from demo.src.plots.backtest_plots import (
+    plot_cashflow,
+    plot_irr,
+)
 
 
 def main():
-    sys.path.append(dirname(dirname(dirname(__file__))))
-
     plot_type = "Cashflow"  # IRR or Cashflow
-
-    from src.backtest import run_backtest
-    from src.plots.backtest_plots import (
-        plot_cashflow,
-        plot_irr,
-    )
 
     contract_params = {
         "ticker": "EUR",

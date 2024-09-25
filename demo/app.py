@@ -1,13 +1,9 @@
-import sys
-from os.path import dirname
-
 import dash
 import dash_bootstrap_components as dbc
 from dash import Input, Output, State, callback, dcc, html, set_props
-from src.about import tt_description
-from src.timetables import CONTRACT_TYPES
+from demo.src.about import tt_description
+from demo.src.timetables import CONTRACT_TYPES
 
-sys.path.append(dirname(__file__))
 
 app = dash.Dash(
     __name__, use_pages=True, external_stylesheets=[dbc.themes.SOLAR]
@@ -170,7 +166,7 @@ contract_editor = html.Div(
 # Sidebar has the Pages Nav (Top), and Contract Editor (Below).
 sidebar = html.Div(
     [
-        html.Img(src="assets/logo.png", width="50%"),
+        html.Img(src="images/logo.png", width="50%"),
         html.P(
             "Explore a variety of financial contracts through two lenses.",
             className="lead",

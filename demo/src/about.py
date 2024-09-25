@@ -2,15 +2,13 @@
 Write about the contract in markdown.
 """
 
-from src.model import DataModel
-from src.timetables import create_timetable
-from src.utils import ROOTDIR
+from demo.src.model import DataModel
+from demo.src.timetables import create_timetable
 
 
 def tt_description(contract_params: dict, trial=0):
     # Create Contract
-    filename = ROOTDIR + "/data/spots.csv"
-    csvdata = DataModel(filename)
+    csvdata = DataModel()
 
     # get all month ends
     monthend_datetimes = csvdata.monthend_datetimes(contract_params["ticker"])
