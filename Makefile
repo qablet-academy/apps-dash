@@ -28,7 +28,7 @@ lint:             ## Run pep8, ruff
 
 .PHONY: test
 test: lint        ## Run tests and generate coverage report.
-	$(ENV_PREFIX)pytest demo/tests
+	$(ENV_PREFIX)pytest ./tests
 
 .PHONY: clean
 clean:            ## Clean unused files.
