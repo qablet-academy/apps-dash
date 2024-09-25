@@ -4,9 +4,9 @@ This page shows future returns projected by model.
 
 import dash
 from dash import Input, Output, callback, dcc, html
-from src.future_cf import model_cashflows, vol_risk
-from src.plots.backtest_plots import blank_figure
-from src.plots.future_plots import plot_cf_vs_spot, plot_price_vol
+from demo.src.future_cf import model_cashflows, vol_risk
+from demo.src.plots.backtest_plots import blank_figure
+from demo.src.plots.future_plots import plot_cf_vs_spot, plot_price_vol
 
 dash.register_page(__name__, path="/")
 

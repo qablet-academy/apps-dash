@@ -6,18 +6,18 @@ from finmc.models.localvol import LVMC
 from qablet.base.flags import Stats
 from qablet.base.mc import MCPricer
 
-from src.model import DataModel
-from src.timetables import (
+from demo.src.model import DataModel
+from demo.src.timetables import (
     create_forward_timetable,
     create_timetable,
     extend_timetable,
 )
-from src.utils import ROOTDIR, base_dataset, dataset_assets
+from demo.src.utils import base_dataset, dataset_assets
 
 
 def model_cashflows(contract_params: dict, trial=0, vol=0.3):
     # Create the models
-    csvdata = DataModel(f"{ROOTDIR}/data/spots.csv")
+    csvdata = DataModel()
     model = MCPricer(LVMC)
 
     ticker = contract_params["ticker"]
@@ -63,7 +63,7 @@ def model_cashflows(contract_params: dict, trial=0, vol=0.3):
 
 def vol_risk(contract_params: dict, trial=0):
     # Create the models
-    csvdata = DataModel(f"{ROOTDIR}/data/spots.csv")
+    csvdata = DataModel()
     model = MCPricer(LVMC)
 
     ticker = contract_params["ticker"]

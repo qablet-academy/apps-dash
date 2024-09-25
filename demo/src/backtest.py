@@ -6,9 +6,9 @@ import pandas as pd
 from finmc.models.localvol import LVMC
 from qablet.base.mc import MCPricer
 
-from src.model import CFModelPyCSV, DataModel, get_cf
-from src.timetables import create_timetable
-from src.utils import ROOTDIR, base_dataset, compute_return, dataset_assets
+from demo.src.model import CFModelPyCSV, DataModel, get_cf
+from demo.src.timetables import create_timetable
+from demo.src.utils import base_dataset, compute_return, dataset_assets
 
 
 def run_backtest(contract_params: dict, annualized: bool = True):
@@ -18,7 +18,7 @@ def run_backtest(contract_params: dict, annualized: bool = True):
     and a dict with the cashflow for each trade date.
     """
     # Create the models
-    filename = ROOTDIR + "/data/spots.csv"
+    filename = "demo/data/spots.csv"
     csvdata = DataModel(filename)
     model = MCPricer(LVMC)
     bk_model = CFModelPyCSV(filename=filename, base="USD")

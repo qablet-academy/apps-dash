@@ -9,8 +9,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import pytz
 from plotly.subplots import make_subplots
-from src.model import MS_IN_DAY, DataModel
-from src.utils import ROOTDIR
+from demo.src.model import MS_IN_DAY, DataModel
 
 
 def blank_figure():
@@ -74,8 +73,7 @@ def plot_cashflow(dates, cf, ticker):
     )
 
     # A plot for the ticker on the bottom sharing x axis with the scatter plot
-    filename = ROOTDIR + "/data/spots.csv"
-    csvdata = DataModel(filename)
+    csvdata = DataModel()
     tickerdf = csvdata.get_curve(prc_dt, end_dt).to_pandas()
     fig.add_trace(
         go.Scatter(
