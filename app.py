@@ -166,7 +166,7 @@ contract_editor = html.Div(
 # Sidebar has the Pages Nav (Top), and Contract Editor (Below).
 sidebar = html.Div(
     [
-        html.Img(src="images/logo.png", width="50%"),
+        html.Img(src="/assets/logo.png", width="50%"),
         html.P(
             "Explore a variety of financial contracts through two lenses.",
             className="lead",
