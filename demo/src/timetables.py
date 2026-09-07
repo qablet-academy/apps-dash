@@ -159,7 +159,7 @@ def extend_timetable(tt1, tt2):
     Assume that all events in tt2 are after the last event in tt1."""
     df1 = pl.from_arrow(tt1["events"])
     df2 = pl.from_arrow(tt2["events"])
-    df1.extend(df2)
+    df1.extend(df2)  # type: ignore[arg-type]
     tt1["events"] = df1.to_arrow().to_batches()[0].cast(TS_EVENT_SCHEMA)
 
 

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 import polars as pl
 from qablet.base.cf import CFModelPyBase
@@ -41,8 +41,8 @@ def get_cf(pricing_ts, timetable, stats):
     # get the timestamp of the events, corresponding to the index in the stats
     ts_col = pl.from_arrow(
         timetable["events"]["time"], schema={"time": pl.Int64}
-    )[df["index"]]
-    df = df.with_columns(ts=ts_col)
+    )[df["index"]]  # type: ignore[index]
+    df = df.with_columns(ts=ts_col)  # type: ignore[union-attr, arg-type]
     # net cashflows by timestamp
     df = df.group_by("ts").agg(pl.col("value").sum())
 
@@ -60,8 +60,8 @@ class DataModel:
         self.data = pl.read_csv(
             filename, try_parse_dates=True, infer_schema_length=None
         ).set_sorted("date")
-        self.start_date = datetime(2019, 12, 31)
-        self.end_date = datetime(2024, 4, 30)
+        self.start_date = datetime(2019, 12, 31, tzinfo=timezone.utc)
+        self.end_date = datetime(2024, 4, 30, tzinfo=timezone.utc)
 
     def get_value(self, unit, dt):
         """Return value for given unit, on given datetime."""
@@ -87,7 +87,7 @@ class DataModel:
         valid_ticker_data = self.data.select(["date", ticker]).drop_nulls()
         valid_datetimes = (
             valid_ticker_data["date"]
-            .cast(datetime)
+            .cast(pl.Datetime)
             .dt.convert_time_zone("UTC")
         )
 

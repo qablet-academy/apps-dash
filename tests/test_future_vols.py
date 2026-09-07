@@ -12,7 +12,7 @@ def test_vols():
         "ticker": "SPX",
         "ctr-type": "Reverse Convertible",
     }
-    vols, prices = vol_risk(contract_params)
+    _, prices = vol_risk(contract_params)
 
     move = prices[-1] - prices[0]
 

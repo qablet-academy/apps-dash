@@ -22,7 +22,7 @@ def tt_description(contract_params: dict, trial=0):
     )
 
     # Get Definition Text from Contract docstring
-    defn_text = contract.__doc__.split("\n\n")[0]
+    defn_text = (contract.__doc__ or "").split("\n\n")[0]
 
     # Create Timetable Text
     timetable = contract.timetable()

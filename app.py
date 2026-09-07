@@ -21,9 +21,9 @@ SIDEBAR_STYLE = {
 }
 
 # Nav to select the page
-report_nav = dbc.Nav(
+report_nav = dbc.Nav(  # type: ignore[operator]
     [
-        dbc.NavLink(
+        dbc.NavLink(  # type: ignore[operator]
             html.Div(page["name"], className="ms-2"),
             href=page["path"],
             active="exact",
@@ -153,7 +153,7 @@ contract_editor = html.Div(
         ),
         dcc.Store(id="ctr-params", storage_type="session"),
         html.Br(),
-        dbc.Button(
+        dbc.Button(  # type: ignore[operator]
             "About this Contract",
             id="open-offcanvas",
             n_clicks=0,
@@ -182,11 +182,11 @@ sidebar = html.Div(
 
 # The app has sidebar on left, the pages are on the right.
 # The pages area is populated by one of the scripts in the /pages folder.
-app.layout = dbc.Container(
+app.layout = dbc.Container(  # type: ignore[operator]
     [
         sidebar,
         dash.page_container,
-        dbc.Offcanvas(
+        dbc.Offcanvas(  # type: ignore[operator]
             [
                 dcc.Markdown(id="offcanvas-body"),
                 html.A(

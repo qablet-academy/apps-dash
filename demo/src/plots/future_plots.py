@@ -40,7 +40,7 @@ def plot_cf_vs_spot(cfsums, spot, vol, params):
             x=x,
             y=y,
             mode="markers",
-            marker=dict(color=color, size=12, opacity=0.4),
+            marker={"color": color, "size": 12, "opacity": 0.4},
         ),
         row=2,
         col=1,
@@ -110,7 +110,7 @@ def plot_price_vol(vols, prices):
         go.Scatter(
             x=vols,
             y=prices,
-            marker=dict(color="coral", size=20, opacity=0.7),
+            marker={"color": "coral", "size": 20, "opacity": 0.7},
         )
     )
     fig.update_xaxes(tickformat=",.0%", title_text="Model Volatility")

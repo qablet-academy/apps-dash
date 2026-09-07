@@ -2,7 +2,7 @@ import cProfile
 import pstats
 from pstats import SortKey
 
-from try_backtest import main  # noqa: F401
+from try_backtest import main
 
 if __name__ == "__main__":
     main()
