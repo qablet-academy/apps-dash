@@ -2,13 +2,13 @@
 Methods to crete figures for the backtest page.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
-import pytz
 from plotly.subplots import make_subplots
+
 from demo.src.model import MS_IN_DAY, DataModel
 
 
@@ -31,8 +31,8 @@ def blank_figure():
 
 def plot_cashflow(dates, cf, ticker):
     prc_ts, end_ts = dates
-    prc_dt = datetime.fromtimestamp(prc_ts // 1000, pytz.utc)
-    end_dt = datetime.fromtimestamp(end_ts // 1000, pytz.utc)
+    prc_dt = datetime.fromtimestamp(prc_ts // 1000, timezone.utc)
+    end_dt = datetime.fromtimestamp(end_ts // 1000, timezone.utc)
     trade_price = cf[2]
 
     x = pd.DatetimeIndex(cf[0], dtype="datetime64[ms, UTC]")
@@ -155,7 +155,6 @@ def plot_irr(x, y, annualized=True, ticker="SPX"):
             x=x,
             y=y,
             mode="markers",
-            customdata=np.arange(len(x)),
             marker=dict(color=color, size=12, opacity=0.7),
         ),
         row=1,

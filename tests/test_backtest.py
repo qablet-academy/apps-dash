@@ -3,6 +3,7 @@ Script to test the plots in the backtest page without launching the app.
 """
 
 import pytest
+
 from demo.src.backtest import run_backtest
 
 

@@ -1,9 +1,9 @@
 import dash
 import dash_bootstrap_components as dbc
 from dash import Input, Output, State, callback, dcc, html, set_props
+
 from demo.src.about import tt_description
 from demo.src.timetables import CONTRACT_TYPES
-
 
 app = dash.Dash(
     __name__, use_pages=True, external_stylesheets=[dbc.themes.SOLAR]
@@ -269,4 +269,4 @@ def toggle_offcanvas(n1, is_open, contract_params):
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run(debug=True)

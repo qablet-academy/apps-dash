@@ -3,6 +3,7 @@ Script to test "about contracts" without launching the app.
 """
 
 import pytest
+
 from demo.src.about import tt_description
 
 

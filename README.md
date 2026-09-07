@@ -11,3 +11,22 @@ Historical returns for trade dates in a five year period.
 Future returns projected by model.
 
 ![UI Main](demo/images/dash_present.png)
+
+
+To setup
+
+```
+py -3.11 -m venv .venv
+.venv/Scripts/activate
+pip install -e . --upgrade
+```
+
+To start locally (Windows)
+```
+python app.py
+```
+
+To deploy (Linux/Render)
+```
+gunicorn app:server
+```

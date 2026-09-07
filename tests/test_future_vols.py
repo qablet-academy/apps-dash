@@ -3,6 +3,7 @@ Script to test the vol risk in the future page without launching the app.
 """
 
 import pytest
+
 from demo.src.future_cf import vol_risk
 
 
