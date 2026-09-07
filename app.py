@@ -1,9 +1,9 @@
 import dash
 import dash_bootstrap_components as dbc
 from dash import Input, Output, State, callback, dcc, html, set_props
+
 from demo.src.about import tt_description
 from demo.src.timetables import CONTRACT_TYPES
-
 
 app = dash.Dash(
     __name__, use_pages=True, external_stylesheets=[dbc.themes.SOLAR]
@@ -21,9 +21,9 @@ SIDEBAR_STYLE = {
 }
 
 # Nav to select the page
-report_nav = dbc.Nav(
+report_nav = dbc.Nav(  # type: ignore[operator]
     [
-        dbc.NavLink(
+        dbc.NavLink(  # type: ignore[operator]
             html.Div(page["name"], className="ms-2"),
             href=page["path"],
             active="exact",
@@ -153,7 +153,7 @@ contract_editor = html.Div(
         ),
         dcc.Store(id="ctr-params", storage_type="session"),
         html.Br(),
-        dbc.Button(
+        dbc.Button(  # type: ignore[operator]
             "About this Contract",
             id="open-offcanvas",
             n_clicks=0,
@@ -182,11 +182,11 @@ sidebar = html.Div(
 
 # The app has sidebar on left, the pages are on the right.
 # The pages area is populated by one of the scripts in the /pages folder.
-app.layout = dbc.Container(
+app.layout = dbc.Container(  # type: ignore[operator]
     [
         sidebar,
         dash.page_container,
-        dbc.Offcanvas(
+        dbc.Offcanvas(  # type: ignore[operator]
             [
                 dcc.Markdown(id="offcanvas-body"),
                 html.A(
@@ -269,4 +269,4 @@ def toggle_offcanvas(n1, is_open, contract_params):
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run(debug=True)

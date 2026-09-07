@@ -14,3 +14,4 @@ dash_daq
 gunicorn
 polars
 ruff
+pyright

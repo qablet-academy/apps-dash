@@ -3,13 +3,14 @@
 import sys
 from os.path import dirname
 
-from line_profiler import LineProfiler
+from line_profiler import LineProfiler  # type: ignore[import-untyped]
 
 if __name__ == "__main__":
     sys.path.append(dirname(dirname(dirname(__file__))))
 
+    from try_backtest import main
+
     from demo.src.backtest import run_backtest
-    from try_backtest import main  # noqa: F401
 
     # Create a LineProfiler object, specifying the methods to be profiled by line
     lprofiler = LineProfiler(run_backtest)

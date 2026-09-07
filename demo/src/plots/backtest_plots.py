@@ -2,13 +2,13 @@
 Methods to crete figures for the backtest page.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
-import pytz
 from plotly.subplots import make_subplots
+
 from demo.src.model import MS_IN_DAY, DataModel
 
 
@@ -31,12 +31,12 @@ def blank_figure():
 
 def plot_cashflow(dates, cf, ticker):
     prc_ts, end_ts = dates
-    prc_dt = datetime.fromtimestamp(prc_ts // 1000, pytz.utc)
-    end_dt = datetime.fromtimestamp(end_ts // 1000, pytz.utc)
+    prc_dt = datetime.fromtimestamp(prc_ts // 1000, timezone.utc)
+    end_dt = datetime.fromtimestamp(end_ts // 1000, timezone.utc)
     trade_price = cf[2]
 
     x = pd.DatetimeIndex(cf[0], dtype="datetime64[ms, UTC]")
-    x = np.insert(x, 0, prc_dt)
+    x = np.insert(x, 0, prc_dt)  # type: ignore[call-overload, arg-type]
     y = np.array(cf[1])
     y = np.insert(y, 0, -trade_price)
 
@@ -79,7 +79,7 @@ def plot_cashflow(dates, cf, ticker):
         go.Scatter(
             x=tickerdf["date"],
             y=tickerdf[ticker],
-            line=dict(color="dimgrey", width=1),
+            line={"color": "dimgrey", "width": 1},
         ),
         row=2,
         col=1,
@@ -114,7 +114,7 @@ def plot_cashflow(dates, cf, ticker):
         text=f"{start_spot}",
         showarrow=False,
         xanchor="right",
-        font=dict(color="dimgrey"),
+        font={"color": "dimgrey"},
         row=2,
         col=1,
     )
@@ -125,7 +125,7 @@ def plot_cashflow(dates, cf, ticker):
         text=f"{end_spot}",
         showarrow=False,
         xanchor="left",
-        font=dict(color="dimgrey"),
+        font={"color": "dimgrey"},
         row=2,
         col=1,
     )
@@ -155,8 +155,7 @@ def plot_irr(x, y, annualized=True, ticker="SPX"):
             x=x,
             y=y,
             mode="markers",
-            customdata=np.arange(len(x)),
-            marker=dict(color=color, size=12, opacity=0.7),
+            marker={"color": color, "size": 12, "opacity": 0.7},
         ),
         row=1,
         col=1,

@@ -5,6 +5,7 @@ This page demonstrates backtesting a given contract type, and show IRR and cashf
 import dash
 from dash import Input, Output, callback, dcc, html
 from dash.exceptions import PreventUpdate
+
 from demo.src.backtest import run_backtest
 from demo.src.plots.backtest_plots import blank_figure, plot_cashflow, plot_irr
 
@@ -22,7 +23,6 @@ layout = html.Div(
                 dcc.Graph(
                     id="past-irr",
                     figure=blank_figure(),
-                    hoverData={"points": [{"customdata": 0}]},
                 ),
                 html.Br(),
                 html.P(
@@ -79,9 +79,13 @@ def update_past_irr(contract_params):
 def update_past_cashflow(hoverData, stats):
     """Plot the cashflow of the selected trade date."""
 
-    idx = hoverData["points"][0].get("customdata")
-    if idx is None:
+    if hoverData is None or stats is None:
         raise PreventUpdate
+    point = hoverData["points"][0]
+    # curveNumber 0 is the scatter trace; 1 is the histogram — ignore histogram hovers
+    if point.get("curveNumber") != 0:
+        raise PreventUpdate
+    idx = point["pointIndex"]
     return plot_cashflow(
         stats["ts"][idx], stats["stats"][idx], stats["ticker"]
     )

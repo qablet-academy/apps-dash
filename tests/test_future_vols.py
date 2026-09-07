@@ -3,6 +3,7 @@ Script to test the vol risk in the future page without launching the app.
 """
 
 import pytest
+
 from demo.src.future_cf import vol_risk
 
 
@@ -11,7 +12,7 @@ def test_vols():
         "ticker": "SPX",
         "ctr-type": "Reverse Convertible",
     }
-    vols, prices = vol_risk(contract_params)
+    _, prices = vol_risk(contract_params)
 
     move = prices[-1] - prices[0]
 
